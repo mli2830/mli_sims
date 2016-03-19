@@ -1,0 +1,7 @@
+---
+title: "Multivariate analysis of discrete response variables using mixed modeling tricks"
+author: Michael Li 
+date: "`r format(Sys.time(), '%H:%M %d %B %Y')`"
+---
+
+Discrete variable data are widely used in many context and are very easy to collect. The simplist form of discrete variable data are dichotomous (or binary) data where  

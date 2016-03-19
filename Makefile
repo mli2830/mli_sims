@@ -26,3 +26,5 @@ include stuff.mk
 
 -include $(ms)/wrapR.mk
 # -include $(ms)/oldlatex.mk
+
+-include rmd.mk
