@@ -1,11 +1,11 @@
 %.html: %.rmd
-        Rscript -e "library(\"rmarkdown\"); render(\"$<\")"
+	Rscript -e "library(\"rmarkdown\"); render(\"$<\")"
 
 %.md: %.rmd
-        Rscript -e "library(\"knitr\"); knit(\"$<\")"
+	Rscript -e "library(\"knitr\"); knit(\"$<\")"
 
 %.tex: %.md
-        pandoc -s -S -t latex -V documentclass=tufte-handout $*.md -o $*.tex
+	pandoc -s -S -t latex -V documentclass=tufte-handout $*.md -o $*.tex
 
 %.pdf: %.tex
-        pdflatex --interaction=nonstopmode $*
+	pdflatex --interaction=nonstopmode $*
