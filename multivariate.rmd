@@ -4,4 +4,15 @@ author: Michael Li
 date: "`r format(Sys.time(), '%H:%M %d %B %Y')`"
 ---
 
-Discrete variable data are widely used in many context and are very easy to collect. The simplist form of discrete variable data are dichotomous (or binary) data where  
+Discrete variable data are widely used in many context and are very easy to collect. 
+
+The simplist form of discrete variable data are dichotomous (or binary) data, where there are only two outcomes (ie. yes or no, true or false, and etc). Binary response variables are not easy to model and the most common approach is by logistic regression (binomal with a logit link). Multivariate response models are complicated on its own, together with binary reponse variables, multivariate binary reponse models are
+
+## HIV Compling Simulation
+
+Response: HIV Antibody test (seropositive/seronegative)
+Sex: Male 
+
+
+
+
