@@ -1,17 +1,20 @@
 ---
-title: "Multivariate analysis of discrete response variables using mixed modeling tricks"
+title: "Multivariate analysis of categorical response variables using mixed modeling tricks"
 author: Michael Li
 date: "`r format(Sys.time(), '%H:%M %d %B %Y')`"
 ---
 
-Discrete variable data are widely used in many context and are very easy to collect. 
+Categorical variable are discrete qualitative variables that are widely used in many context and are very easy to collect. Although it is convenient to collect categorical/qualitative data, modelling categorical response variables can be is not straight forward. Categorical variables can be further categorized into three types: Nominal, ordinal, and dichotomous. Multivariate models are complicated on its own, together with categorical variables, multivariable categorical response are pretty difficult.
 
-The simplist form of discrete variable data are dichotomous (or binary) data, where there are only two outcomes (ie. yes or no, true or false, and etc). Binary response variables are not easy to model and the most common approach is by logistic regression (binomal with a logit link). Multivariate response models are complicated on its own, together with binary reponse variables, multivariate binary reponse models are
+The simplist type are dichotomous (or binary) variables, where there are only two outcomes (ie. yes or no, true or false, and etc). Binary response variables are not easy to model and the most common approach is by logistic regression (binomal with a logit link).
 
 ## HIV Compling Simulation
 
 Response: HIV Antibody test (seropositive/seronegative)
-Sex: Male 
+
+Predictors: Sex, coupling time, pre-coupling time, activeness
+
+
 
 
 

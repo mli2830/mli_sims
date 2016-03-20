@@ -1,7 +1,7 @@
 ### Hooks for the editor to set the default target
 current: target
 
-target pngtarget pdftarget vtarget acrtarget: multivar_sim.md
+target pngtarget pdftarget vtarget acrtarget: multivariate.html
 ##################################################################
 
 # make files
