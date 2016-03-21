@@ -15,6 +15,7 @@ library(MCMCglmm)
 library(lme4)
 library(ggplot2)
 library(reshape2)
+library(dplyr)
 library(tidyr)
 library(rstan)
 theme_set(theme_bw())
@@ -47,3 +48,28 @@ head(multivar_df)
 
 ```
 
+Now we want to reshape/melt it into a univariate framework.
+
+```{r univariate df, message=FALSE,warning=FALSE}
+Mdat <- multivar_df %>% 
+  transmute(results=Mresults
+            , pre_couplingT=Mpre_couplingT
+            , couplingT=couplingT
+            , activeness=Mactiveness
+            , sex="Male"
+            , couple_id = 1:1000)
+
+Fdat <- multivar_df %>% 
+  transmute(results=Fresults
+            , pre_couplingT=Fpre_couplingT
+            , couplingT=couplingT
+            , activeness=Factiveness
+            , sex="Female"
+            , couple_id = 1:1000
+            )
+
+uni_dat <- rbind(Mdat,Fdat) %>% mutate(id=1:2000)
+
+head(uni_dat)
+
+```
