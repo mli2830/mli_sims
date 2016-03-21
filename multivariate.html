@@ -69,16 +69,53 @@ img {
 <div id="header">
 <h1 class="title">Multivariate analysis of categorical response variables using mixed modeling tricks</h1>
 <h4 class="author"><em>Michael Li</em></h4>
-<h4 class="date"><em>19:22 20 March 2016</em></h4>
+<h4 class="date"><em>09:36 21 March 2016</em></h4>
 </div>
 
 
-<p>Categorical variable are discrete qualitative variables that are widely used in many context and are very easy to collect. Although it is convenient to collect categorical/qualitative data, modelling categorical response variables can be is not straight forward. Categorical variables can be further categorized into three types: Nominal, ordinal, and dichotomous. Multivariate models are complicated on its own, together with categorical variables, multivariable categorical response are pretty difficult.</p>
-<p>The simplist type are dichotomous (or binary) variables, where there are only two outcomes (ie. yes or no, true or false, and etc). Binary response variables are not easy to model and the most common approach is by logistic regression (binomal with a logit link).</p>
-<div id="hiv-compling-simulation" class="section level2">
-<h2>HIV Compling Simulation</h2>
+<p>Categorical variable are discrete qualitative variables that are widely used in many context and are very easy to collect. Although it is convenient to collect categorical/qualitative data, modelling categorical response variables can be is not straight forward. Categorical variables can be further categorized into three types: Nominal, ordinal, and dichotomous. Multivariate models are complicated on its own, together with categorical variables, multivariable categorical response are pretty difficult. We will first start with multivariate dichotomous variable and then to multivariate ordinal after.</p>
+<p>The simplist type are dichotomous (or binary) variables, where there are only two outcomes (ie. yes or no, true or false, and etc). The most common approach is by logistic regression (binomal with a logit link).</p>
+<div id="multivariate-binary-simulation" class="section level2">
+<h2>Multivariate Binary Simulation</h2>
+<pre class="r"><code>library(MCMCglmm)
+library(lme4)
+library(ggplot2)
+library(reshape2)
+library(tidyr)
+library(rstan)
+theme_set(theme_bw())</code></pre>
+<p>Let’s tailor this simulation test with a HIV coupling application.</p>
 <p>Response: HIV Antibody test (seropositive/seronegative)</p>
-<p>Predictors: Sex, coupling time, pre-coupling time, activeness</p>
+<p>Predictors: Coupling time, pre-coupling time, activeness</p>
+<p>Id: id, couple id</p>
+<pre class="r"><code>set.seed(1221)
+Mresults &lt;- rbinom(n=1000,size=1,prob=0.7)
+Fresults &lt;- rbinom(n=1000,size=1,prob=0.7)
+Mpre_couplingT &lt;- rbinom(n=1000,size=20,prob=0.3)
+Fpre_couplingT &lt;- rbinom(n=1000,size=20,prob=0.5)
+couplingT &lt;- rbinom(n=1000,size=20,prob=0.5)
+Mactiveness &lt;- rbinom(n=1000,size=1,prob=0.6)
+Factiveness &lt;- rbinom(n=1000,size=1,prob=0.4)
+
+multivar_df &lt;- data.frame(Mresults, Fresults, 
+                          Mpre_couplingT, Fpre_couplingT, 
+                          couplingT, Mactiveness,Factiveness)
+
+head(multivar_df)</code></pre>
+<pre><code>##   Mresults Fresults Mpre_couplingT Fpre_couplingT couplingT Mactiveness
+## 1        1        0              6             10         9           1
+## 2        1        1              8             13        10           1
+## 3        1        0              6             11        11           0
+## 4        0        1              9             12         9           1
+## 5        1        1              5             13        11           0
+## 6        0        1              2             11        13           1
+##   Factiveness
+## 1           0
+## 2           1
+## 3           0
+## 4           0
+## 5           1
+## 6           0</code></pre>
 </div>
 
 
