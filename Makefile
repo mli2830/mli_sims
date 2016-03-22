@@ -1,7 +1,8 @@
 ### Hooks for the editor to set the default target
 current: target
 
-target pngtarget pdftarget vtarget acrtarget: multivariate.html
+target pngtarget pdftarget vtarget acrtarget: simulate.mcmc.Rout 
+
 ##################################################################
 
 # make files
@@ -11,9 +12,17 @@ include stuff.mk
 
 ##################################################################
 
-##################################################################
-
 ## Content
+
+Sources += $(wildcard *.R)
+
+simulate.Rout: simulate.R
+
+simulate.mcmc.Rout: simulate.Rout mcmc.R
+%.mcmc.Rout: %.Rout mcmc.R
+	$(run-R)
+
+##################################################################
 
 ### Makestuff
 
