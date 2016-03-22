@@ -69,7 +69,11 @@ img {
 <div id="header">
 <h1 class="title">Multivariate analysis of categorical response variables using mixed modeling tricks</h1>
 <h4 class="author"><em>Michael Li</em></h4>
+<<<<<<< HEAD
 <h4 class="date"><em>12:55 22 March 2016</em></h4>
+=======
+<h4 class="date"><em>22:49 21 March 2016</em></h4>
+>>>>>>> 42fe207ac27de85afd896eeff15a49812c256376
 </div>
 
 
@@ -126,9 +130,13 @@ head(multivar_df)</code></pre>
 <pre class="r"><code>mfit &lt;- MCMCglmm(cbind(Mresults,Fresults)~trait + Cactiveness - 1
             #     , random = ~us(trait):clusterid
                  , rcov=~us(trait):units
-                 , family=c(&quot;ordinal&quot;,&quot;ordinal&quot;)
-                 , data=multivar_df)</code></pre>
+                 , family=c(&quot;categorical&quot;,&quot;categorical&quot;)
+                 , data=multivar_df
+         , verbose=FALSE)
+
+summary(mfit)</code></pre>
 <pre><code>## 
+<<<<<<< HEAD
 ##                        MCMC iteration = 0
 ## 
 ##  Acceptance ratio for liability set 1 = 0.000514
@@ -182,10 +190,13 @@ head(multivar_df)</code></pre>
 ##  Acceptance ratio for liability set 1 = 0.333511</code></pre>
 <pre class="r"><code>summary(mfit)</code></pre>
 <pre><code>## 
+=======
+>>>>>>> 42fe207ac27de85afd896eeff15a49812c256376
 ##  Iterations = 3001:12991
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
+<<<<<<< HEAD
 ##  DIC: 
 ## 
 ##  R-structure:  ~us(trait):units
@@ -202,6 +213,28 @@ head(multivar_df)</code></pre>
 ## traitMresults   -4.0854  -6.0420  -2.1631    4.412 &lt;0.001 ***
 ## traitFresults   -3.2737  -5.3987  -1.6444    4.568 &lt;0.001 ***
 ## Cactiveness      0.1902  -0.3760   0.7602   42.952  0.536    
+=======
+##  DIC: 2469.078 
+## 
+##  R-structure:  ~us(trait):units
+## 
+##                                       post.mean  l-95% CI u-95% CI
+## traitMresults.1:traitMresults.1.units   0.28382  0.020089   0.5169
+## traitFresults.1:traitMresults.1.units   0.09008 -0.002546   0.2949
+## traitMresults.1:traitFresults.1.units   0.09008 -0.002546   0.2949
+## traitFresults.1:traitFresults.1.units   0.09164  0.010799   0.3388
+##                                       eff.samp
+## traitMresults.1:traitMresults.1.units    4.911
+## traitFresults.1:traitMresults.1.units    3.614
+## traitMresults.1:traitFresults.1.units    3.614
+## traitFresults.1:traitFresults.1.units    3.494
+## 
+##  Location effects: cbind(Mresults, Fresults) ~ trait - 1 
+## 
+##                 post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## traitMresults.1    0.8094   0.6538   0.9817    11.92 &lt;0.001 ***
+## traitFresults.1    0.8575   0.7315   1.0145    10.69 &lt;0.001 ***
+>>>>>>> 42fe207ac27de85afd896eeff15a49812c256376
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p>Ok, we obivously did/model it wrong. The mixing is very bad. (see eff.samp)</p>
@@ -213,6 +246,7 @@ uni_dat &lt;- melt(tempdat, id=c(&quot;id&quot;,&quot;clusterid&quot;,&quot;Cact
                 variable.name =&quot;sex&quot;,value.name = &quot;results&quot;)
 
 head(uni_dat)</code></pre>
+<<<<<<< HEAD
 <pre><code>##   id clusterid Cactiveness      sex results
 ## 1  1        12           1 Mresults       0
 ## 2  2        15           0 Mresults       0
@@ -260,6 +294,54 @@ head(uni_dat)</code></pre>
 ## sexFresults -0.106  0.060
 ## convergence code: 0
 ## Model failed to converge with max|grad| = 0.458145 (tol = 0.001, component 1)</code></pre>
+=======
+<pre><code>##   results pre_couplingT couplingT activeness  sex couple_id id
+## 1       1             6         9          1 Male         1  1
+## 2       1             8        10          1 Male         2  2
+## 3       1             6        11          0 Male         3  3
+## 4       0             9         9          1 Male         4  4
+## 5       1             5        11          0 Male         5  5
+## 6       0             2        13          1 Male         6  6</code></pre>
+<pre class="r"><code>glmerfit &lt;- glmer(results~pre_couplingT + couplingT + sex + activeness-1 + (1|couple_id)
+                  , family=&quot;binomial&quot;
+                  , verbose=FALSE
+                  , data=uni_dat)
+
+summary(glmerfit)</code></pre>
+<pre><code>## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: results ~ pre_couplingT + couplingT + sex + activeness - 1 +  
+##     (1 | couple_id)
+##    Data: uni_dat
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##   2472.6   2506.2  -1230.3   2460.6     1994 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -1.6720 -1.3735  0.6200  0.6516  0.7745 
+## 
+## Random effects:
+##  Groups    Name        Variance Std.Dev.
+##  couple_id (Intercept) 0.1417   0.3765  
+## Number of obs: 2000, groups:  couple_id, 1000
+## 
+## Fixed effects:
+##               Estimate Std. Error z value Pr(&gt;|z|)
+## pre_couplingT  0.01391    0.02343   0.594    0.553
+## couplingT      0.03199    0.02317   1.381    0.167
+## sexFemale      0.44456    0.33660   1.321    0.187
+## sexMale        0.46277    0.28562   1.620    0.105
+## activeness    -0.08252    0.10243  -0.806    0.420
+## 
+## Correlation of Fixed Effects:
+##            pr_cpT cplngT sexFml sexMal
+## couplingT  -0.003                     
+## sexFemale  -0.686 -0.679              
+## sexMale    -0.493 -0.799  0.918       
+## activeness  0.012 -0.033 -0.105 -0.198</code></pre>
+>>>>>>> 42fe207ac27de85afd896eeff15a49812c256376
 </div>
 
 
