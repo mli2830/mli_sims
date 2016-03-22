@@ -33,17 +33,20 @@ Id: id, couple id
 
 ```{r simulate data}
 set.seed(1221)
-Mresults <- rbinom(n=1000,size=1,prob=0.7)
-Fresults <- rbinom(n=1000,size=1,prob=0.7)
+Mresults <- rbinom(n=1000,size=1,prob=0.2)
+Fresults <- rbinom(n=1000,size=1,prob=0.2)
 Mpre_couplingT <- rbinom(n=1000,size=20,prob=0.3)
 Fpre_couplingT <- rbinom(n=1000,size=20,prob=0.5)
 couplingT <- rbinom(n=1000,size=20,prob=0.5)
 Mactiveness <- rbinom(n=1000,size=1,prob=0.6)
 Factiveness <- rbinom(n=1000,size=1,prob=0.4)
+Cactiveness <- rbinom(n=1000,size=1,prob=0.3)
+clusterid <- rbinom(n=1000,20,prob=0.5)
 
 multivar_df <- data.frame(Mresults, Fresults, 
                           Mpre_couplingT, Fpre_couplingT, 
                           couplingT, Mactiveness,Factiveness,
+                          Cactiveness, clusterid,
                           id=1:1000)
 
 head(multivar_df)
@@ -55,10 +58,13 @@ How that we have it in the multivariate framework, we can try to model it using 
 
 ```{r MCMCglmm fit, warning=FALSE,message=FALSE}
 
-mfit <- MCMCglmm(cbind(Mresults,Fresults)~trait-1
+mfit <- MCMCglmm(cbind(Mresults,Fresults)~trait + Cactiveness - 1
+            #     , random = ~us(trait):clusterid
                  , rcov=~us(trait):units
                  , family=c("ordinal","ordinal")
                  , data=multivar_df)
+
+summary(mfit)
 
 ```
 
@@ -67,25 +73,23 @@ Ok, we obivously did/model it wrong. The mixing is very bad. (see eff.samp)
 Now we want to reshape/melt it into a univariate framework.
 
 ```{r univariate df, message=FALSE,warning=FALSE}
-Mdat <- multivar_df %>% 
-  transmute(results=Mresults
-            , pre_couplingT=Mpre_couplingT
-            , couplingT=couplingT
-            , activeness=Mactiveness
-            , sex="Male"
-            , couple_id = 1:1000)
 
-Fdat <- multivar_df %>% 
-  transmute(results=Fresults
-            , pre_couplingT=Fpre_couplingT
-            , couplingT=couplingT
-            , activeness=Factiveness
-            , sex="Female"
-            , couple_id = 1:1000
-            )
+tempdat <- multivar_df %>% 
+  select(c(Mresults,Fresults,Cactiveness,clusterid,id))
 
-uni_dat <- rbind(Mdat,Fdat) %>% mutate(id=1:2000)
+uni_dat <- melt(tempdat, id=c("id","clusterid","Cactiveness"),
+                variable.name ="sex",value.name = "results")
 
 head(uni_dat)
+
+```
+
+```{r univariate glmfit,warning=FALSE}
+
+glmfit <- glmer(results~Cactiveness + sex -1 + (0+sex|id)
+                , family="binomial"
+                , data=uni_dat)
+
+summary(glmfit)
 
 ```

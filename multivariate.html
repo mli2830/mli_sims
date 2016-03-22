@@ -69,7 +69,7 @@ img {
 <div id="header">
 <h1 class="title">Multivariate analysis of categorical response variables using mixed modeling tricks</h1>
 <h4 class="author"><em>Michael Li</em></h4>
-<h4 class="date"><em>21:58 21 March 2016</em></h4>
+<h4 class="date"><em>12:55 22 March 2016</em></h4>
 </div>
 
 
@@ -91,120 +91,175 @@ theme_set(theme_bw())</code></pre>
 <p>Predictors: Coupling time, pre-coupling time, activeness</p>
 <p>Id: id, couple id</p>
 <pre class="r"><code>set.seed(1221)
-Mresults &lt;- rbinom(n=1000,size=1,prob=0.7)
-Fresults &lt;- rbinom(n=1000,size=1,prob=0.7)
+Mresults &lt;- rbinom(n=1000,size=1,prob=0.2)
+Fresults &lt;- rbinom(n=1000,size=1,prob=0.2)
 Mpre_couplingT &lt;- rbinom(n=1000,size=20,prob=0.3)
 Fpre_couplingT &lt;- rbinom(n=1000,size=20,prob=0.5)
 couplingT &lt;- rbinom(n=1000,size=20,prob=0.5)
 Mactiveness &lt;- rbinom(n=1000,size=1,prob=0.6)
 Factiveness &lt;- rbinom(n=1000,size=1,prob=0.4)
+Cactiveness &lt;- rbinom(n=1000,size=1,prob=0.3)
+clusterid &lt;- rbinom(n=1000,20,prob=0.5)
 
 multivar_df &lt;- data.frame(Mresults, Fresults, 
                           Mpre_couplingT, Fpre_couplingT, 
                           couplingT, Mactiveness,Factiveness,
+                          Cactiveness, clusterid,
                           id=1:1000)
 
 head(multivar_df)</code></pre>
 <pre><code>##   Mresults Fresults Mpre_couplingT Fpre_couplingT couplingT Mactiveness
-## 1        1        0              6             10         9           1
-## 2        1        1              8             13        10           1
-## 3        1        0              6             11        11           0
-## 4        0        1              9             12         9           1
-## 5        1        1              5             13        11           0
-## 6        0        1              2             11        13           1
-##   Factiveness id
-## 1           0  1
-## 2           1  2
-## 3           0  3
-## 4           0  4
-## 5           1  5
-## 6           0  6</code></pre>
+## 1        0        1              6             10         9           1
+## 2        0        0              8             13        10           1
+## 3        0        1              6             11        11           0
+## 4        0        0              9             12         9           1
+## 5        0        0              5             13        11           0
+## 6        1        0              2             11        13           1
+##   Factiveness Cactiveness clusterid id
+## 1           0           1        12  1
+## 2           1           0        15  2
+## 3           0           0        11  3
+## 4           0           1        11  4
+## 5           1           1        14  5
+## 6           0           1         7  6</code></pre>
 <p>How that we have it in the multivariate framework, we can try to model it using MCMCglmm</p>
-<pre class="r"><code>mfit &lt;- MCMCglmm(cbind(Mresults,Fresults)~trait-1
+<pre class="r"><code>mfit &lt;- MCMCglmm(cbind(Mresults,Fresults)~trait + Cactiveness - 1
+            #     , random = ~us(trait):clusterid
                  , rcov=~us(trait):units
                  , family=c(&quot;ordinal&quot;,&quot;ordinal&quot;)
                  , data=multivar_df)</code></pre>
 <pre><code>## 
 ##                        MCMC iteration = 0
 ## 
-##  Acceptance ratio for liability set 1 = 0.000517
+##  Acceptance ratio for liability set 1 = 0.000514
 ## 
 ##                        MCMC iteration = 1000
 ## 
-##  Acceptance ratio for liability set 1 = 0.315012
+##  Acceptance ratio for liability set 1 = 0.310563
 ## 
 ##                        MCMC iteration = 2000
 ## 
-##  Acceptance ratio for liability set 1 = 0.303600
+##  Acceptance ratio for liability set 1 = 0.300947
 ## 
 ##                        MCMC iteration = 3000
 ## 
-##  Acceptance ratio for liability set 1 = 0.302943
+##  Acceptance ratio for liability set 1 = 0.292218
 ## 
 ##                        MCMC iteration = 4000
 ## 
-##  Acceptance ratio for liability set 1 = 0.264419
+##  Acceptance ratio for liability set 1 = 0.285490
 ## 
 ##                        MCMC iteration = 5000
 ## 
-##  Acceptance ratio for liability set 1 = 0.225413
+##  Acceptance ratio for liability set 1 = 0.285112
 ## 
 ##                        MCMC iteration = 6000
 ## 
-##  Acceptance ratio for liability set 1 = 0.199226
+##  Acceptance ratio for liability set 1 = 0.305818
 ## 
 ##                        MCMC iteration = 7000
 ## 
-##  Acceptance ratio for liability set 1 = 0.181913
+##  Acceptance ratio for liability set 1 = 0.280038
 ## 
 ##                        MCMC iteration = 8000
 ## 
-##  Acceptance ratio for liability set 1 = 0.167352
+##  Acceptance ratio for liability set 1 = 0.286230
 ## 
 ##                        MCMC iteration = 9000
 ## 
-##  Acceptance ratio for liability set 1 = 0.117941
+##  Acceptance ratio for liability set 1 = 0.324142
 ## 
 ##                        MCMC iteration = 10000
 ## 
-##  Acceptance ratio for liability set 1 = 0.176233
+##  Acceptance ratio for liability set 1 = 0.350459
 ## 
 ##                        MCMC iteration = 11000
 ## 
-##  Acceptance ratio for liability set 1 = 0.116595
+##  Acceptance ratio for liability set 1 = 0.370117
 ## 
 ##                        MCMC iteration = 12000
 ## 
-##  Acceptance ratio for liability set 1 = 0.102153</code></pre>
+##  Acceptance ratio for liability set 1 = 0.333511</code></pre>
+<pre class="r"><code>summary(mfit)</code></pre>
+<pre><code>## 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
+## 
+##  DIC: 
+## 
+##  R-structure:  ~us(trait):units
+## 
+##                                   post.mean l-95% CI u-95% CI eff.samp
+## traitMresults:traitMresults.units    23.108   3.2398   45.544    3.824
+## traitFresults:traitMresults.units     1.449  -0.9617    3.798  193.552
+## traitMresults:traitFresults.units     1.449  -0.9617    3.798  193.552
+## traitFresults:traitFresults.units    15.086   3.0714   39.287    4.632
+## 
+##  Location effects: cbind(Mresults, Fresults) ~ trait + Cactiveness - 1 
+## 
+##               post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## traitMresults   -4.0854  -6.0420  -2.1631    4.412 &lt;0.001 ***
+## traitFresults   -3.2737  -5.3987  -1.6444    4.568 &lt;0.001 ***
+## Cactiveness      0.1902  -0.3760   0.7602   42.952  0.536    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p>Ok, we obivously did/model it wrong. The mixing is very bad. (see eff.samp)</p>
 <p>Now we want to reshape/melt it into a univariate framework.</p>
-<pre class="r"><code>Mdat &lt;- multivar_df %&gt;% 
-  transmute(results=Mresults
-            , pre_couplingT=Mpre_couplingT
-            , couplingT=couplingT
-            , activeness=Mactiveness
-            , sex=&quot;Male&quot;
-            , couple_id = 1:1000)
+<pre class="r"><code>tempdat &lt;- multivar_df %&gt;% 
+  select(c(Mresults,Fresults,Cactiveness,clusterid,id))
 
-Fdat &lt;- multivar_df %&gt;% 
-  transmute(results=Fresults
-            , pre_couplingT=Fpre_couplingT
-            , couplingT=couplingT
-            , activeness=Factiveness
-            , sex=&quot;Female&quot;
-            , couple_id = 1:1000
-            )
-
-uni_dat &lt;- rbind(Mdat,Fdat) %&gt;% mutate(id=1:2000)
+uni_dat &lt;- melt(tempdat, id=c(&quot;id&quot;,&quot;clusterid&quot;,&quot;Cactiveness&quot;),
+                variable.name =&quot;sex&quot;,value.name = &quot;results&quot;)
 
 head(uni_dat)</code></pre>
-<pre><code>##   results pre_couplingT couplingT activeness  sex couple_id id
-## 1       1             6         9          1 Male         1  1
-## 2       1             8        10          1 Male         2  2
-## 3       1             6        11          0 Male         3  3
-## 4       0             9         9          1 Male         4  4
-## 5       1             5        11          0 Male         5  5
-## 6       0             2        13          1 Male         6  6</code></pre>
+<pre><code>##   id clusterid Cactiveness      sex results
+## 1  1        12           1 Mresults       0
+## 2  2        15           0 Mresults       0
+## 3  3        11           0 Mresults       0
+## 4  4        11           1 Mresults       0
+## 5  5        14           1 Mresults       0
+## 6  6         7           1 Mresults       1</code></pre>
+<pre class="r"><code>glmfit &lt;- glmer(results~Cactiveness + sex -1 + (0+sex|id)
+                , family=&quot;binomial&quot;
+                , data=uni_dat)</code></pre>
+<pre><code>## Warning in checkConv(attr(opt, &quot;derivs&quot;), opt$par, ctrl = control
+## $checkConv, : Model failed to converge with max|grad| = 0.458145 (tol =
+## 0.001, component 1)</code></pre>
+<pre class="r"><code>summary(glmfit)</code></pre>
+<pre><code>## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: results ~ Cactiveness + sex - 1 + (0 + sex | id)
+##    Data: uni_dat
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##   1617.7   1651.3   -802.8   1605.7     1994 
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -0.55559 -0.47205 -0.00334 -0.00285  2.11840 
+## 
+## Random effects:
+##  Groups Name        Variance Std.Dev. Corr
+##  id     sexMresults    0      0.00        
+##         sexFresults 1983     44.53     NaN
+## Number of obs: 2000, groups:  id, 1000
+## 
+## Fixed effects:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## Cactiveness   0.32588    0.16496   1.976   0.0482 *  
+## sexMresults  -1.50132    0.09682 -15.507   &lt;2e-16 ***
+## sexFresults -11.70611    0.59579 -19.648   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##             Cctvns sxMrsl
+## sexMresults -0.571       
+## sexFresults -0.106  0.060
+## convergence code: 0
+## Model failed to converge with max|grad| = 0.458145 (tol = 0.001, component 1)</code></pre>
 </div>
 
 
