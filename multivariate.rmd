@@ -53,12 +53,16 @@ head(multivar_df)
 
 How that we have it in the multivariate framework, we can try to model it using MCMCglmm
 
+
 ```{r MCMCglmm fit, warning=FALSE,message=FALSE}
 
 mfit <- MCMCglmm(cbind(Mresults,Fresults)~trait-1
                  , rcov=~us(trait):units
-                 , family=c("ordinal","ordinal")
-                 , data=multivar_df)
+                 , family=c("categorical","categorical")
+                 , data=multivar_df
+		 , verbose=FALSE)
+
+summary(mfit)
 
 ```
 
@@ -87,5 +91,16 @@ Fdat <- multivar_df %>%
 uni_dat <- rbind(Mdat,Fdat) %>% mutate(id=1:2000)
 
 head(uni_dat)
+
+```
+
+```{r glmerfit,warning=FALSE,message=FALSE}
+
+glmerfit <- glmer(results~pre_couplingT + couplingT + sex + activeness-1 + (1|couple_id)
+                  , family="binomial"
+                  , verbose=FALSE
+                  , data=uni_dat)
+
+summary(glmerfit)
 
 ```
