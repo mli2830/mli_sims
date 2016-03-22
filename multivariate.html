@@ -69,7 +69,7 @@ img {
 <div id="header">
 <h1 class="title">Multivariate analysis of categorical response variables using mixed modeling tricks</h1>
 <h4 class="author"><em>Michael Li</em></h4>
-<h4 class="date"><em>10:22 21 March 2016</em></h4>
+<h4 class="date"><em>21:58 21 March 2016</em></h4>
 </div>
 
 
@@ -84,6 +84,7 @@ library(reshape2)
 library(dplyr)
 library(tidyr)
 library(rstan)
+library(coda)
 theme_set(theme_bw())</code></pre>
 <p>Let’s tailor this simulation test with a HIV coupling application.</p>
 <p>Response: HIV Antibody test (seropositive/seronegative)</p>
@@ -100,7 +101,8 @@ Factiveness &lt;- rbinom(n=1000,size=1,prob=0.4)
 
 multivar_df &lt;- data.frame(Mresults, Fresults, 
                           Mpre_couplingT, Fpre_couplingT, 
-                          couplingT, Mactiveness,Factiveness)
+                          couplingT, Mactiveness,Factiveness,
+                          id=1:1000)
 
 head(multivar_df)</code></pre>
 <pre><code>##   Mresults Fresults Mpre_couplingT Fpre_couplingT couplingT Mactiveness
@@ -110,13 +112,71 @@ head(multivar_df)</code></pre>
 ## 4        0        1              9             12         9           1
 ## 5        1        1              5             13        11           0
 ## 6        0        1              2             11        13           1
-##   Factiveness
-## 1           0
-## 2           1
-## 3           0
-## 4           0
-## 5           1
-## 6           0</code></pre>
+##   Factiveness id
+## 1           0  1
+## 2           1  2
+## 3           0  3
+## 4           0  4
+## 5           1  5
+## 6           0  6</code></pre>
+<p>How that we have it in the multivariate framework, we can try to model it using MCMCglmm</p>
+<pre class="r"><code>mfit &lt;- MCMCglmm(cbind(Mresults,Fresults)~trait-1
+                 , rcov=~us(trait):units
+                 , family=c(&quot;ordinal&quot;,&quot;ordinal&quot;)
+                 , data=multivar_df)</code></pre>
+<pre><code>## 
+##                        MCMC iteration = 0
+## 
+##  Acceptance ratio for liability set 1 = 0.000517
+## 
+##                        MCMC iteration = 1000
+## 
+##  Acceptance ratio for liability set 1 = 0.315012
+## 
+##                        MCMC iteration = 2000
+## 
+##  Acceptance ratio for liability set 1 = 0.303600
+## 
+##                        MCMC iteration = 3000
+## 
+##  Acceptance ratio for liability set 1 = 0.302943
+## 
+##                        MCMC iteration = 4000
+## 
+##  Acceptance ratio for liability set 1 = 0.264419
+## 
+##                        MCMC iteration = 5000
+## 
+##  Acceptance ratio for liability set 1 = 0.225413
+## 
+##                        MCMC iteration = 6000
+## 
+##  Acceptance ratio for liability set 1 = 0.199226
+## 
+##                        MCMC iteration = 7000
+## 
+##  Acceptance ratio for liability set 1 = 0.181913
+## 
+##                        MCMC iteration = 8000
+## 
+##  Acceptance ratio for liability set 1 = 0.167352
+## 
+##                        MCMC iteration = 9000
+## 
+##  Acceptance ratio for liability set 1 = 0.117941
+## 
+##                        MCMC iteration = 10000
+## 
+##  Acceptance ratio for liability set 1 = 0.176233
+## 
+##                        MCMC iteration = 11000
+## 
+##  Acceptance ratio for liability set 1 = 0.116595
+## 
+##                        MCMC iteration = 12000
+## 
+##  Acceptance ratio for liability set 1 = 0.102153</code></pre>
+<p>Ok, we obivously did/model it wrong. The mixing is very bad. (see eff.samp)</p>
 <p>Now we want to reshape/melt it into a univariate framework.</p>
 <pre class="r"><code>Mdat &lt;- multivar_df %&gt;% 
   transmute(results=Mresults

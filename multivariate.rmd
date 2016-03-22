@@ -18,6 +18,7 @@ library(reshape2)
 library(dplyr)
 library(tidyr)
 library(rstan)
+library(coda)
 theme_set(theme_bw())
 
 ```
@@ -42,11 +43,26 @@ Factiveness <- rbinom(n=1000,size=1,prob=0.4)
 
 multivar_df <- data.frame(Mresults, Fresults, 
                           Mpre_couplingT, Fpre_couplingT, 
-                          couplingT, Mactiveness,Factiveness)
+                          couplingT, Mactiveness,Factiveness,
+                          id=1:1000)
 
 head(multivar_df)
 
+
 ```
+
+How that we have it in the multivariate framework, we can try to model it using MCMCglmm
+
+```{r MCMCglmm fit, warning=FALSE,message=FALSE}
+
+mfit <- MCMCglmm(cbind(Mresults,Fresults)~trait-1
+                 , rcov=~us(trait):units
+                 , family=c("ordinal","ordinal")
+                 , data=multivar_df)
+
+```
+
+Ok, we obivously did/model it wrong. The mixing is very bad. (see eff.samp) 
 
 Now we want to reshape/melt it into a univariate framework.
 
