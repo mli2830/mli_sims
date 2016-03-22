@@ -14,6 +14,14 @@ include stuff.mk
 
 ## Content
 
+#### Li
+
+Sources += $(wildcard %.rmd)
+Archive += multivariate.html
+
+multivariate.html: multivariate.rmd
+
+##### Dushoff
 Sources += $(wildcard *.R)
 
 simulate.Rout: simulate.R
