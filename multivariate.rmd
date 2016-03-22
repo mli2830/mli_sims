@@ -4,9 +4,9 @@ author: Michael Li
 date: "`r format(Sys.time(), '%H:%M %d %B %Y')`"
 ---
 
-Categorical variable are discrete qualitative variables that are widely used in many context and are very easy to collect. Although it is convenient to collect categorical/qualitative data, modelling categorical response variables can be is not straight forward. Categorical variables can be further categorized into three types: Nominal, ordinal, and dichotomous. Multivariate models are complicated on its own, together with categorical variables, multivariable categorical response are pretty difficult. We will first start with multivariate dichotomous variable and then to multivariate ordinal after.
+Categorical variables are discrete qualitative variables that are widely used in many contexts and are very easy to collect. Although it is convenient to collect categorical/qualitative data, modelling categorical response variables can be is not straight forward. Categorical variables can be further categorized into three types: Nominal, ordinal, and dichotomous. Multivariate models are complicated on its own, together with categorical variables, multivariable categorical response are pretty difficult. We will first start with multivariate dichotomous variable and then to multivariate ordinal after.
 
-The simplist type are dichotomous (or binary) variables, where there are only two outcomes (ie. yes or no, true or false, and etc). The most common approach is by logistic regression (binomal with a logit link).
+The simplest type are binary variables, where there are only two outcomes. The most common approach is by logistic regression (binomal with a logit link).
 
 ## Multivariate Binary Simulation
 
@@ -17,7 +17,7 @@ library(ggplot2)
 library(reshape2)
 library(dplyr)
 library(tidyr)
-library(rstan)
+# library(rstan)
 library(coda)
 theme_set(theme_bw())
 
@@ -33,8 +33,13 @@ Id: id, couple id
 
 ```{r simulate data}
 set.seed(1221)
-Mresults <- rbinom(n=1000,size=1,prob=0.2)
-Fresults <- rbinom(n=1000,size=1,prob=0.2)
+pM <- 0.5
+pF <- 0.4
+pMF <- 0.3
+
+uni <- runif(n=1000)
+Mresults <- (uni < pM)
+Fresults <- ((uni > (pM-pMF)) & (uni > (pM + pF - pMF)))
 Mpre_couplingT <- rbinom(n=1000,size=20,prob=0.3)
 Fpre_couplingT <- rbinom(n=1000,size=20,prob=0.5)
 couplingT <- rbinom(n=1000,size=20,prob=0.5)
@@ -42,6 +47,8 @@ Mactiveness <- rbinom(n=1000,size=1,prob=0.6)
 Factiveness <- rbinom(n=1000,size=1,prob=0.4)
 Cactiveness <- rbinom(n=1000,size=1,prob=0.3)
 clusterid <- rbinom(n=1000,20,prob=0.5)
+
+print(table(Mresults, Fresults))
 
 multivar_df <- data.frame(Mresults, Fresults, 
                           Mpre_couplingT, Fpre_couplingT, 

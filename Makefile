@@ -16,7 +16,7 @@ include stuff.mk
 
 #### Li
 
-Sources += $(wildcard %.rmd)
+Sources += $(wildcard *.rmd)
 Archive += multivariate.html
 
 multivariate.html: multivariate.rmd
