@@ -68,7 +68,6 @@ mfit <- MCMCglmm(cbind(Mresults,Fresults)~trait + Cactiveness - 1
 
 summary(mfit)
 
-summary(mfit)
 
 ```
 
@@ -88,7 +87,6 @@ head(uni_dat)
 
 ```
 
-<<<<<<< HEAD
 ```{r univariate glmfit,warning=FALSE}
 
 glmfit <- glmer(results~Cactiveness + sex -1 + (0+sex|id)
@@ -96,15 +94,6 @@ glmfit <- glmer(results~Cactiveness + sex -1 + (0+sex|id)
                 , data=uni_dat)
 
 summary(glmfit)
-=======
-```{r glmerfit,warning=FALSE,message=FALSE}
-
-glmerfit <- glmer(results~pre_couplingT + couplingT + sex + activeness-1 + (1|couple_id)
-                  , family="binomial"
-                  , verbose=FALSE
-                  , data=uni_dat)
-
-summary(glmerfit)
->>>>>>> 42fe207ac27de85afd896eeff15a49812c256376
 
 ```
+
