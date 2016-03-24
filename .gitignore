@@ -1,1 +1,4 @@
 makestuff/
+.*
+*.Rout
+*.[r]

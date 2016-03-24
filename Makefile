@@ -30,6 +30,9 @@ simulate.mcmc.Rout: simulate.Rout mcmc.R
 %.mcmc.Rout: %.Rout mcmc.R
 	$(run-R)
 
+simulate.lme4.Rout: simulate.Rout lme4.R
+%.lme4.Rout: %.Rout lme4.R
+	     $(run-R)
 ##################################################################
 
 ### Makestuff
