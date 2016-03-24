@@ -16,5 +16,5 @@ glmfit <- glmer(results~sex+Cactiveness-1+(0+sex|id)
                 , family="binomial"
                 , data=uni_df)
 
-summary(glmfit)
+print(summary(glmfit))
 

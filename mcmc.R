@@ -7,6 +7,6 @@ mfit <- MCMCglmm(cbind(Mresults,Fresults)~trait + Cactiveness - 1
                  , data=multivar_df
 		 , verbose=FALSE)
 
-summary(mfit)
+print(summary(mfit))
 
 
