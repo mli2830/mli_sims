@@ -78,7 +78,7 @@ summary(mfit)
 
 ```
 
-Ok, we obivously did/model it wrong. The mixing is very bad. (see eff.samp) 
+Ok, we obivously did/model it wrong. The mixing is very bad. (see eff.samp).
 
 Now we want to reshape/melt it into a univariate framework.
 
@@ -104,3 +104,4 @@ summary(glmfit)
 
 ```
 
+The results from univariate/ glm fit is not good too. The reason is because lme4 is using laplace approximation and random effect sample size needs to be large. We are in the worst possible case scenario of having only size 2 (couple size). The way around this is to use adaptive/Hermite gaussian quadrature. 
