@@ -35,6 +35,9 @@ simfun <- function(n=1000,Cprob=0.3,beta=c(-1,1,1),theta=c(1,0,1)) {
     return(sim3)
 }
 
+form <- results~sex+Cactiveness-1+(0+sex|id)
+
+
 tmpf <- function() {
     sim3 <- simfun()
     glmfit2 <- glmer(form

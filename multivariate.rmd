@@ -32,39 +32,16 @@ Predictors: Coupling time, pre-coupling time, activeness
 Id: id, couple id
 
 ```{r simulate data}
-set.seed(1221)
-pM <- 0.5
-pF <- 0.4
-pMF <- 0.3
 
-uni <- runif(n=1000)
-Mresults <- (uni < pM)
-Fresults <- ((uni > (pM-pMF)) & (uni > (pM + pF - pMF)))
-Mpre_couplingT <- rbinom(n=1000,size=20,prob=0.3)
-Fpre_couplingT <- rbinom(n=1000,size=20,prob=0.5)
-couplingT <- rbinom(n=1000,size=20,prob=0.5)
-Mactiveness <- rbinom(n=1000,size=1,prob=0.6)
-Factiveness <- rbinom(n=1000,size=1,prob=0.4)
-Cactiveness <- rbinom(n=1000,size=1,prob=0.3)
-clusterid <- rbinom(n=1000,20,prob=0.5)
-
-print(table(Mresults, Fresults))
-
-multivar_df <- data.frame(Mresults, Fresults, 
-                          Mpre_couplingT, Fpre_couplingT, 
-                          couplingT, Mactiveness,Factiveness,
-                          Cactiveness, clusterid,
-                          id=1:1000)
-
+load(".simulate.RData")
 head(multivar_df)
-
 
 ```
 
 How that we have it in the multivariate framework, we can try to model it using MCMCglmm
 
 
-```{r MCMCglmm fit, warning=FALSE,message=FALSE}
+```{r MCMCglmm fit, warning=FALSE,message=FALSE,eval=FALSE}
 
 mfit <- MCMCglmm(cbind(Mresults,Fresults)~trait + Cactiveness - 1
             #     , random = ~us(trait):clusterid
@@ -72,17 +49,21 @@ mfit <- MCMCglmm(cbind(Mresults,Fresults)~trait + Cactiveness - 1
                  , family=c("categorical","categorical")
                  , data=multivar_df
 		 , verbose=FALSE)
+```
+
+```{r MCMCglmm results,warning=FALSE,meggage=FALSE}
+
+load(".simulate.mcmc.RData")
 
 summary(mfit)
 
-
 ```
 
-Ok, we obivously did/model it wrong. The mixing is very bad. (see eff.samp).
-
-Now we want to reshape/melt it into a univariate framework.
+The mixing is very bad. (see eff.samp). If the results look correct than it is fine. We can increase the MCMC chains more and see if the results looks correct for the prince of computation time. Another way to test is to model in the univariate random effect framework and see if the results are sensible.
 
 ```{r univariate df, message=FALSE,warning=FALSE}
+
+load(".simulate.lme4.RData")
 
 tempdat <- multivar_df %>% 
   select(c(Mresults,Fresults,Cactiveness,clusterid,id))
