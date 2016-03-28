@@ -41,7 +41,7 @@ head(multivar_df)
 How that we have it in the multivariate framework, we can try to model it using MCMCglmm
 
 
-```{r MCMCglmm fit, warning=FALSE,message=FALSE,eval=FALSE}
+```{r MCMCglmm fit, warning=FALSE,message=FALSE}
 
 mfit <- MCMCglmm(cbind(Mresults,Fresults)~trait + Cactiveness - 1
             #     , random = ~us(trait):clusterid
@@ -49,40 +49,24 @@ mfit <- MCMCglmm(cbind(Mresults,Fresults)~trait + Cactiveness - 1
                  , family=c("categorical","categorical")
                  , data=multivar_df
 		 , verbose=FALSE)
-```
-
-```{r MCMCglmm results,warning=FALSE,meggage=FALSE}
-
-load(".simulate.mcmc.RData")
 
 summary(mfit)
 
 ```
 
-The mixing is very bad. (see eff.samp). If the results look correct than it is fine. We can increase the MCMC chains more and see if the results looks correct for the prince of computation time. Another way to test is to model in the univariate random effect framework and see if the results are sensible.
+The mixing is very bad. (see eff.samp). If the results look correct than it is fine. We can increase the MCMC chains more and see if the results look correct for the price of computation time. Another way to test is to model in the univariate random effect framework and see if the results are sensible.
 
 ```{r univariate df, message=FALSE,warning=FALSE}
 
-load(".simulate.lme4.RData")
+head(uni_df)
 
-tempdat <- multivar_df %>% 
-  select(c(Mresults,Fresults,Cactiveness,clusterid,id))
-
-uni_dat <- melt(tempdat, id=c("id","clusterid","Cactiveness"),
-                variable.name ="sex",value.name = "results")
-
-head(uni_dat)
-
-```
-
-```{r univariate glmfit,warning=FALSE}
-
-glmfit <- glmer(results~Cactiveness + sex -1 + (0+sex|id)
+glmfit <- glmer(results~sex+Cactiveness-1+(0+sex|id)
                 , family="binomial"
-                , data=uni_dat)
+                , data=uni_df)
 
 summary(glmfit)
-
 ```
 
-The results from univariate/ glm fit is not good too. The reason is because lme4 is using laplace approximation and random effect sample size needs to be large. We are in the worst possible case scenario of having only size 2 (couple size). The way around this is to use adaptive/Hermite gaussian quadrature. 
+The results from univariate/ glm fit is not good too. The reason is because lme4 uses Laplace approximation for the random effects and it needs large sample size random effects. We are in the worst possible case scenario of having only size 2 (couple size). The way around this is to use adaptive/Hermite gaussian quadrature.
+
+
