@@ -24,15 +24,18 @@ multivariate.html: multivariate.rmd
 ##### Dushoff
 Sources += $(wildcard *.R)
 
-simulate.Rout: simulate.R
-
-simulate.mcmc.Rout: simulate.Rout mcmc.R
-%.mcmc.Rout: %.Rout mcmc.R
+naive.simulate.Rout: simulate.R
+lme4.simulate.Rout: lme4_sim_params.R lme4_sim.R
+%.simulate.Rout:
 	$(run-R)
 
-simulate.lme4.Rout: simulate.Rout lme4.R
-%.lme4.Rout: %.Rout lme4.R
-	     $(run-R)
+%.mcmcglmm_fit.Rout: %.Rout mcmcglmm_fit.R
+		     $(run-R)
+
+%.lme4_fit.Rout: %.Rout lme4_fit.R
+		 $(run-R)
+
+
 ##################################################################
 
 ### Makestuff

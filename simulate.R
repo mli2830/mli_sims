@@ -1,4 +1,6 @@
 library(dplyr)
+library(tidyr)
+
 set.seed(1221)
 pM <- 0.5
 pF <- 0.4
@@ -21,22 +23,18 @@ multivar_df <- data.frame(Mresults, Fresults,
                           Mpre_couplingT, Fpre_couplingT, 
                           couplingT, Mactiveness,Factiveness,
                           Cactiveness, clusterid,
-                          id=1:1000)
+                          couple_id=1:1000)
 
-Mdf <- multivar_df %>% 
-  mutate(results=Mresults,sex="Male") %>%
-  select(c(results,Cactiveness,sex,id))
+univar_df <- multivar_df %>% 
+  gather(key="Sex",value="results",Mresults,Fresults) %>%
+  mutate(id=1:nrow(.)) %>%
+  gather(key="SexT",value="pre_couplingT",Mpre_couplingT,Fpre_couplingT) %>%
+  gather(key="SexA",value="activeness",Mactiveness,Factiveness) %>%
+  mutate(Sex = ifelse(Sex=="Mresults","Male","Female"),
+         SexT = ifelse(SexT=="Mpre_couplingT","Male","Female"),
+         SexA = ifelse(SexA=="Mactiveness","Male","Female")) %>%
+  group_by(id) %>% summarise_each(funs(first)) %>% select(-c(SexT,SexA))
 
-
-Fdf <- multivar_df %>% 
-  mutate(results=Fresults,sex="Female") %>%
-  select(c(results,Cactiveness,sex,id))
-
-## head(reshape2::melt(multivar_df,id.vars=2:ncol(multivar_df))
-
-uni_df <- rbind(Mdf,Fdf)
-
-
-# rdsave(multivar_df,uni_df)
+# rdsave(multivar_df,univar_df)
 
 
