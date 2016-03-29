@@ -69,7 +69,7 @@ img {
 <div id="header">
 <h1 class="title">Multivariate analysis of categorical response variables using mixed modeling tricks</h1>
 <h4 class="author"><em>Michael Li</em></h4>
-<h4 class="date"><em>23:31 28 March 2016</em></h4>
+<h4 class="date"><em>09:49 29 March 2016</em></h4>
 </div>
 
 
@@ -99,7 +99,7 @@ head(multivar_df)</code></pre>
 ## 4    FALSE    FALSE              4             13        12           1
 ## 5     TRUE     TRUE              5              9        13           0
 ## 6    FALSE    FALSE              6              5        11           0
-##   Factiveness Cactiveness clusterid couple_id
+##   Factiveness Cactiveness clusterid Couple_id
 ## 1           0           0        12         1
 ## 2           0           0        11         2
 ## 3           1           0         8         3
@@ -120,34 +120,34 @@ summary(mfit)</code></pre>
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 2266.783 
+##  DIC: 2147.922 
 ## 
 ##  R-structure:  ~us(trait):units
 ## 
 ##                                             post.mean l-95% CI u-95% CI
-## traitMresults.TRUE:traitMresults.TRUE.units     8.923    6.075   12.014
-## traitFresults.TRUE:traitMresults.TRUE.units     5.495    3.910    7.105
-## traitMresults.TRUE:traitFresults.TRUE.units     5.495    3.910    7.105
-## traitFresults.TRUE:traitFresults.TRUE.units     3.453    2.403    4.471
+## traitMresults.TRUE:traitMresults.TRUE.units    11.256    5.029    16.17
+## traitFresults.TRUE:traitMresults.TRUE.units     9.528    5.524    16.15
+## traitMresults.TRUE:traitFresults.TRUE.units     9.528    5.524    16.15
+## traitFresults.TRUE:traitFresults.TRUE.units    15.665    3.240    39.50
 ##                                             eff.samp
-## traitMresults.TRUE:traitMresults.TRUE.units    23.67
-## traitFresults.TRUE:traitMresults.TRUE.units    31.71
-## traitMresults.TRUE:traitFresults.TRUE.units    31.71
-## traitFresults.TRUE:traitFresults.TRUE.units    34.98
+## traitMresults.TRUE:traitMresults.TRUE.units   10.269
+## traitFresults.TRUE:traitMresults.TRUE.units    6.861
+## traitMresults.TRUE:traitFresults.TRUE.units    6.861
+## traitFresults.TRUE:traitFresults.TRUE.units    3.142
 ## 
 ##  Location effects: cbind(Mresults, Fresults) ~ trait + Cactiveness - 1 
 ## 
 ##                    post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## traitMresults.TRUE   0.23023 -0.01788  0.50270   118.94  0.086 .  
-## traitFresults.TRUE  -0.65909 -0.83100 -0.48375    61.33 &lt;0.001 ***
-## Cactiveness         -0.24893 -0.64035  0.06656    11.14  0.176    
+## traitMresults.TRUE   0.13493 -0.18364  0.51637  110.469  0.448    
+## traitFresults.TRUE  -1.07548 -1.92955 -0.47488    4.587 &lt;0.001 ***
+## Cactiveness         -0.09465 -0.65915  0.46838   82.385  0.722    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p>The mixing is very bad. (see eff.samp). If the results look correct than it is fine. We can increase the MCMC chains more and see if the results look correct for the price of computation time. Another way to test is to model in the univariate random effect framework and see if the results are sensible.</p>
 <pre class="r"><code>head(univar_df)</code></pre>
 <pre><code>## Source: local data frame [6 x 9]
 ## 
-##      id couplingT Cactiveness clusterid couple_id   Sex results
+##      id couplingT Cactiveness clusterid Couple_id   Sex results
 ##   (int)     (int)       (int)     (int)     (int) (chr)   (lgl)
 ## 1     1        10           0        12         1  Male    TRUE
 ## 2     2        13           0        11         2  Male    TRUE
@@ -156,7 +156,7 @@ summary(mfit)</code></pre>
 ## 5     5        13           1        12         5  Male    TRUE
 ## 6     6        11           0        12         6  Male   FALSE
 ## Variables not shown: pre_couplingT (int), activeness (int)</code></pre>
-<pre class="r"><code>glmfit &lt;- glmer(results~Sex+Cactiveness-1+(0+Sex|couple_id)
+<pre class="r"><code>glmfit &lt;- glmer(results~Sex+Cactiveness-1+(0+Sex|Couple_id)
                 , family=&quot;binomial&quot;
                 , data=univar_df)
 
@@ -164,7 +164,7 @@ summary(glmfit)</code></pre>
 <pre><code>## Generalized linear mixed model fit by maximum likelihood (Laplace
 ##   Approximation) [glmerMod]
 ##  Family: binomial  ( logit )
-## Formula: results ~ Sex + Cactiveness - 1 + (0 + Sex | couple_id)
+## Formula: results ~ Sex + Cactiveness - 1 + (0 + Sex | Couple_id)
 ##    Data: univar_df
 ## 
 ##      AIC      BIC   logLik deviance df.resid 
@@ -176,9 +176,9 @@ summary(glmfit)</code></pre>
 ## 
 ## Random effects:
 ##  Groups    Name      Variance Std.Dev. Corr
-##  couple_id SexFemale 3.044    1.745        
+##  Couple_id SexFemale 3.044    1.745        
 ##            SexMale   2.510    1.584    1.00
-## Number of obs: 2000, groups:  couple_id, 1000
+## Number of obs: 2000, groups:  Couple_id, 1000
 ## 
 ## Fixed effects:
 ##             Estimate Std. Error z value Pr(&gt;|z|)    
@@ -192,8 +192,47 @@ summary(glmfit)</code></pre>
 ##             SexFml SexMal
 ## SexMale      0.426       
 ## Cactiveness -0.442 -0.482</code></pre>
-<p>The results from univariate/ glm fit is not good too. The reason is because lme4 uses Laplace approximation for the random effects and it needs large sample size random effects. We are in the worst possible case scenario of having only size 2 (couple size). The way around this is to use adaptive/Hermite gaussian quadrature.</p>
+<p>The results from univariate/ glm fit is not good too. The reason is because lme4 uses Laplace approximation for the random effects and it needs large sample size random effects. We are in the worst possible case scenario of having only size 2 (couple size). The way around this is to use Gaussian Hermite Quadrature.</p>
 <p>For now, we can simulate via lme4 and use MCMCglmm to fit and see if it can estimate the parameters.</p>
+<pre class="r"><code>load(&quot;./multivariate_sim/.lme4.simulate.RData&quot;)
+
+glmfit2 &lt;- glmer(results~Sex+Cactiveness-1+(0+Sex|Couple_id)
+                , family=&quot;binomial&quot;
+                , data=univar_df)
+
+summary(glmfit2)</code></pre>
+<pre><code>## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: results ~ Sex + Cactiveness - 1 + (0 + Sex | Couple_id)
+##    Data: univar_df
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##   2359.3   2392.9  -1173.6   2347.3     1994 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.5015 -0.6422  0.3852  0.6258  1.5460 
+## 
+## Random effects:
+##  Groups    Name      Variance Std.Dev. Corr 
+##  Couple_id SexMale   0.10491  0.3239        
+##            SexFemale 0.07699  0.2775   -1.00
+## Number of obs: 2000, groups:  Couple_id, 1000
+## 
+## Fixed effects:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## SexMale     -0.91836    0.08787 -10.452   &lt;2e-16 ***
+## SexFemale    0.89102    0.09224   9.660   &lt;2e-16 ***
+## Cactiveness  0.96272    0.11829   8.139    4e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##             SexMal SexFml
+## SexFemale    0.132       
+## Cactiveness -0.541 -0.226</code></pre>
+<p>The new set of simulated data is simulated via lme4 with <span class="math inline">\(\beta = -1,1,1\)</span> and <span class="math inline">\(\theta = 1,0,1\)</span></p>
 </div>
 
 

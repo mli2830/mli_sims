@@ -60,14 +60,27 @@ The mixing is very bad. (see eff.samp). If the results look correct than it is f
 
 head(univar_df)
 
-glmfit <- glmer(results~Sex+Cactiveness-1+(0+Sex|couple_id)
+glmfit <- glmer(results~Sex+Cactiveness-1+(0+Sex|Couple_id)
                 , family="binomial"
                 , data=univar_df)
 
 summary(glmfit)
 ```
 
-The results from univariate/ glm fit is not good too. The reason is because lme4 uses Laplace approximation for the random effects and it needs large sample size random effects. We are in the worst possible case scenario of having only size 2 (couple size). The way around this is to use adaptive/Hermite gaussian quadrature.
+The results from univariate/ glm fit is not good too. The reason is because lme4 uses Laplace approximation for the random effects and it needs large sample size random effects. We are in the worst possible case scenario of having only size 2 (couple size). The way around this is to use Gaussian Hermite Quadrature.
 
 For now, we can simulate via lme4 and use MCMCglmm to fit and see if it can estimate the parameters.
 
+```{r simulate via lme4,warning=FALSE,message=FALSE}
+
+load("./multivariate_sim/.lme4.simulate.RData")
+
+glmfit2 <- glmer(results~Sex+Cactiveness-1+(0+Sex|Couple_id)
+                , family="binomial"
+                , data=univar_df)
+
+summary(glmfit2)
+
+```
+
+The new set of simulated data is simulated via lme4 with $\beta = -1,1,1$ and $\theta = 1,0,1$ 

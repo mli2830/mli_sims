@@ -23,7 +23,7 @@ multivar_df <- data.frame(Mresults, Fresults,
                           Mpre_couplingT, Fpre_couplingT, 
                           couplingT, Mactiveness,Factiveness,
                           Cactiveness, clusterid,
-                          couple_id=1:1000)
+                          Couple_id=1:1000)
 
 univar_df <- multivar_df %>% 
   gather(key="Sex",value="results",Mresults,Fresults) %>%
