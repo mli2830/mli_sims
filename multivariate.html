@@ -69,7 +69,7 @@ img {
 <div id="header">
 <h1 class="title">Multivariate analysis of categorical response variables using mixed modeling tricks</h1>
 <h4 class="author"><em>Michael Li</em></h4>
-<h4 class="date"><em>10:17 29 March 2016</em></h4>
+<h4 class="date"><em>10:47 29 March 2016</em></h4>
 </div>
 
 
@@ -120,27 +120,27 @@ summary(mfit)</code></pre>
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 2289.947 
+##  DIC: 2306.713 
 ## 
 ##  R-structure:  ~us(trait):units
 ## 
 ##                                             post.mean l-95% CI u-95% CI
-## traitMresults.TRUE:traitMresults.TRUE.units     7.678    5.449   10.125
-## traitFresults.TRUE:traitMresults.TRUE.units     5.093    3.624    6.709
-## traitMresults.TRUE:traitFresults.TRUE.units     5.093    3.624    6.709
-## traitFresults.TRUE:traitFresults.TRUE.units     3.388    2.364    4.505
+## traitMresults.TRUE:traitMresults.TRUE.units     6.070    3.496    9.242
+## traitFresults.TRUE:traitMresults.TRUE.units     5.232    3.766    7.052
+## traitMresults.TRUE:traitFresults.TRUE.units     5.232    3.766    7.052
+## traitFresults.TRUE:traitFresults.TRUE.units     5.014    3.059    7.243
 ##                                             eff.samp
-## traitMresults.TRUE:traitMresults.TRUE.units    43.53
-## traitFresults.TRUE:traitMresults.TRUE.units    42.24
-## traitMresults.TRUE:traitFresults.TRUE.units    42.24
-## traitFresults.TRUE:traitFresults.TRUE.units    39.33
+## traitMresults.TRUE:traitMresults.TRUE.units    12.19
+## traitFresults.TRUE:traitMresults.TRUE.units    73.06
+## traitMresults.TRUE:traitFresults.TRUE.units    73.06
+## traitFresults.TRUE:traitFresults.TRUE.units    27.25
 ## 
 ##  Location effects: cbind(Mresults, Fresults) ~ trait + Cactiveness - 1 
 ## 
 ##                    post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## traitMresults.TRUE   0.16358 -0.08035  0.40625   156.02   0.19    
-## traitFresults.TRUE  -0.65213 -0.81325 -0.44933    84.73 &lt;0.001 ***
-## Cactiveness         -0.12260 -0.45971  0.21784    18.56   0.55    
+## traitMresults.TRUE    0.1306  -0.1166   0.4139    145.0  0.352    
+## traitFresults.TRUE   -0.7168  -0.9849  -0.4549     93.2 &lt;0.001 ***
+## Cactiveness          -0.1057  -0.5232   0.2936    398.4  0.608    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p>The mixing is very bad. (see eff.samp). If the results look correct than it is fine. We can increase the MCMC chains more and see if the results look correct for the price of computation time. Another way to test is to model in the univariate random effect framework and see if the results are sensible.</p>
@@ -208,30 +208,33 @@ summary(glmfit2)</code></pre>
 ##    Data: univar_df
 ## 
 ##      AIC      BIC   logLik deviance df.resid 
-##   2359.3   2392.9  -1173.6   2347.3     1994 
+##  11930.2  11973.5  -5959.1  11918.2     9994 
 ## 
 ## Scaled residuals: 
 ##     Min      1Q  Median      3Q     Max 
-## -2.5015 -0.6422  0.3852  0.6258  1.5460 
+## -2.3965 -0.6402  0.4155  0.6781  1.5620 
 ## 
 ## Random effects:
-##  Groups    Name      Variance Std.Dev. Corr 
-##  Couple_id SexMale   0.10491  0.3239        
-##            SexFemale 0.07699  0.2775   -1.00
-## Number of obs: 2000, groups:  Couple_id, 1000
+##  Groups    Name      Variance Std.Dev. Corr
+##  Couple_id SexMale   0.000000 0.00000      
+##            SexFemale 0.008381 0.09155   NaN
+## Number of obs: 10000, groups:  Couple_id, 5000
 ## 
 ## Fixed effects:
 ##             Estimate Std. Error z value Pr(&gt;|z|)    
-## SexMale     -0.91836    0.08787 -10.452   &lt;2e-16 ***
-## SexFemale    0.89102    0.09224   9.660   &lt;2e-16 ***
-## Cactiveness  0.96272    0.11829   8.139    4e-16 ***
+## SexMale     -0.89194    0.03487  -25.58   &lt;2e-16 ***
+## SexFemale    0.77440    0.04496   17.23   &lt;2e-16 ***
+## Cactiveness  0.98075    0.05100   19.23   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Correlation of Fixed Effects:
 ##             SexMal SexFml
-## SexFemale    0.132       
-## Cactiveness -0.541 -0.226</code></pre>
+## SexFemale    0.051       
+## Cactiveness -0.500 -0.102
+## convergence code: 0
+## unable to evaluate scaled gradient
+## Model failed to converge: degenerate  Hessian with 1 negative eigenvalues</code></pre>
 <p>The new set of simulated data is simulated via lme4 with <span class="math inline">\(\beta = -1,1,1\)</span> and <span class="math inline">\(\theta = 1,0,1\)</span>, where <span class="math inline">\(\beta\)</span>’s are the fixed coefficients parameters and <span class="math inline">\(\theta\)</span>’s are the variance/covariace parameters of the random effect. The <span class="math inline">\(\beta\)</span> are correct but lme4 fail to estimate the <span class="math inline">\(\theta\)</span>.</p>
 <p>Now lets fit via mcmcglmm.</p>
 <pre class="r"><code>mfit2 &lt;- MCMCglmm(cbind(Mresults,Fresults)~trait + Cactiveness - 1
@@ -247,22 +250,22 @@ summary(mfit2)</code></pre>
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 2357.013 
+##  DIC: 11925.24 
 ## 
 ##  R-structure:  ~us(trait):units
 ## 
 ##                                       post.mean l-95% CI u-95% CI eff.samp
-## traitMresults.1:traitMresults.1.units    0.9604   0.2390   2.1175    3.001
-## traitFresults.1:traitMresults.1.units   -0.2798  -0.7845   0.2190    1.409
-## traitMresults.1:traitFresults.1.units   -0.2798  -0.7845   0.2190    1.409
-## traitFresults.1:traitFresults.1.units    0.2302   0.0608   0.3977   17.086
+## traitMresults.1:traitMresults.1.units   0.53685   0.1271   1.0314    2.732
+## traitFresults.1:traitMresults.1.units   0.03579  -0.1593   0.2021    7.024
+## traitMresults.1:traitFresults.1.units   0.03579  -0.1593   0.2021    7.024
+## traitFresults.1:traitFresults.1.units   0.38459   0.1961   0.5585    6.151
 ## 
 ##  Location effects: cbind(Mresults, Fresults) ~ trait + Cactiveness - 1 
 ## 
 ##                 post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## traitMresults.1   -1.0478  -1.2942  -0.8336    14.09 &lt;0.001 ***
-## traitFresults.1    0.8915   0.7484   1.0232    23.04 &lt;0.001 ***
-## Cactiveness        1.0566   0.8514   1.2519    29.59 &lt;0.001 ***
+## traitMresults.1   -0.9883  -1.0940  -0.8863    28.51 &lt;0.001 ***
+## traitFresults.1    0.8322   0.7577   0.9122    47.09 &lt;0.001 ***
+## Cactiveness        1.0743   0.9648   1.2049    61.62 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
