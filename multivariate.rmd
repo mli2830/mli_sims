@@ -33,7 +33,7 @@ Id: id, couple id
 
 ```{r simulate data}
 
-load("./multivariate_sim/.simulate.RData")
+load("./multivariate_sim/.naive.simulate.RData")
 head(multivar_df)
 
 ```
@@ -58,11 +58,11 @@ The mixing is very bad. (see eff.samp). If the results look correct than it is f
 
 ```{r univariate df, message=FALSE,warning=FALSE}
 
-head(uni_df)
+head(univar_df)
 
-glmfit <- glmer(results~sex+Cactiveness-1+(0+sex|id)
+glmfit <- glmer(results~Sex+Cactiveness-1+(0+Sex|couple_id)
                 , family="binomial"
-                , data=uni_df)
+                , data=univar_df)
 
 summary(glmfit)
 ```
