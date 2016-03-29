@@ -83,4 +83,19 @@ summary(glmfit2)
 
 ```
 
-The new set of simulated data is simulated via lme4 with $\beta = -1,1,1$ and $\theta = 1,0,1$ 
+The new set of simulated data is simulated via lme4 with $\beta = -1,1,1$ and $\theta = 1,0,1$, where $\beta$'s are the fixed coefficients parameters and $\theta$'s are the variance/covariace parameters of the random effect. The $\beta$ are correct but lme4 fail to estimate the $\theta$.
+
+Now lets fit via mcmcglmm.
+
+```{r mcmcglmm fit via lme4 dat, warning=FALSE, message=FALSE}
+
+mfit2 <- MCMCglmm(cbind(Mresults,Fresults)~trait + Cactiveness - 1
+            #     , random = ~us(trait):clusterid
+                 , rcov=~us(trait):units
+                 , family=c("categorical","categorical")
+                 , data=multivar_df
+		 , verbose=FALSE)
+
+summary(mfit2)
+
+```
