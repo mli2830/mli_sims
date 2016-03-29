@@ -33,7 +33,7 @@ Id: id, couple id
 
 ```{r simulate data}
 
-load(".simulate.RData")
+load("./multivariate_sim/.simulate.RData")
 head(multivar_df)
 
 ```
