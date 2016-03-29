@@ -94,6 +94,7 @@ mfit2 <- MCMCglmm(cbind(Mresults,Fresults)~trait + Cactiveness - 1
                  , rcov=~us(trait):units
                  , family=c("categorical","categorical")
                  , data=multivar_df
+                 , nitt=30000
 		 , verbose=FALSE)
 
 summary(mfit2)
