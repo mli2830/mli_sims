@@ -19,4 +19,12 @@ Sources += $(wildcard *.rmd)
 Archive += multivariate.html
 
 multivariate.html: multivariate.rmd
+
+done:
+	say -v Trinoids "complete"
+
+job: multivariate.html done
+
 -include rmd.mk
+
+
