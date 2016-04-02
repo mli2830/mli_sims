@@ -1,7 +1,9 @@
 ### Hooks for the editor to set the default target
-current: target
+current: pymc.html
+	open pymc.html
+	say -v Vicki "Human, your file is complete"
 
-target pngtarget pdftarget vtarget acrtarget: multivariate.html
+target pngtarget pdftarget vtarget acrtarget: pymc.html
 
 ##################################################################
 
@@ -19,11 +21,9 @@ Sources += $(wildcard *.rmd)
 Archive += multivariate.html
 
 multivariate.html: multivariate.rmd
-
-done:
 	say -v Trinoids "complete"
 
-job: multivariate.html done
+pymc.html: pymc.rmd
 
 -include rmd.mk
 
