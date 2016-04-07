@@ -95,11 +95,11 @@ with basic_model:
     # obtain starting values via MAP
     start = find_MAP(fmin=optimize.fmin_powell)
 
-    # instantiate sampler
-    step = Slice(vars=[sigma]) 
+#     # instantiate sampler
+#     step = Slice(vars=[sigma]) 
 
     # draw 1000 posterior samples
-    trace = sample(1000, step=step, start=start) 
+    trace = sample(1000, start=start) 
     
 summary(trace)
 

@@ -1,6 +1,6 @@
 ### Hooks for the editor to set the default target
-current: pymc.html
-	open pymc.html
+current: pymc2.html
+	open pymc2.html
 	say -v Vicki "Human, your file is complete"
 
 target pngtarget pdftarget vtarget acrtarget: pymc.html
@@ -24,6 +24,9 @@ multivariate.html: multivariate.rmd
 	say -v Trinoids "complete"
 
 pymc.html: pymc.rmd
+
+
+pymc2.html: pymc2.rmd
 
 -include rmd.mk
 
