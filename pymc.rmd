@@ -86,20 +86,29 @@ with basic_model:
     # Likelihood (sampling distribution) of observations
     Y_obs = Normal('Y_obs', mu=mu, sd=sigma, observed=Y)
 
-map_estimate = find_MAP(model=basic_model)
-print(map_estimate)
+# map_estimate = find_MAP(model=basic_model)
+# print(map_estimate)
 
+# make my own starting point 
+aa = dict(beta=0.5,alpha=0.5,sigma=1)
 
+print(aa)
+    
 with basic_model:
 
     # obtain starting values via MAP
-    start = find_MAP(fmin=optimize.fmin_powell)
-
-#     # instantiate sampler
-#     step = Slice(vars=[sigma]) 
+    # start = find_MAP(fmin=optimize.fmin_powell)
+    start = dict(beta=0.5,alpha=0.5,sigma_log=1)
+    
+    # instantiate sampler
+    #step = Slice(vars=[sigma,alpha,beta]) 
 
     # draw 1000 posterior samples
-    trace = sample(1000, start=start) 
+    trace = sample(1000, start=start)
+    
+    # step = Slice(vars=[sigma,alpha,beta])
+    # step = Slice(vars=[sigma])
+    # trace = sample(1000, step=step, start=start)
     
 summary(trace)
 
