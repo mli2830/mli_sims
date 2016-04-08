@@ -74,30 +74,30 @@ with basic_model:
     N0 = Binomial("N0",n=N,p=effprop)
     I1 = 1
     S1 = N0 - I1
-    Psi = 1 - (1-beta)**I1
+    Psi12 = 1 - (1-beta)**I1
     # Likelihood (sampling distribution) of observations unfolding the for loop 
     obs1 = Binomial("obs1",n=I1,p=reporting,observed=Iobs1)
     
 
-    I2 = Binomial("I2",n=S1,p=Psi) 
+    I2 = Binomial("I2",n=S1,p=Psi12) 
     S2 = S1 - I1
-    Psi = 1 - (1-beta)**I2
+    Psi23 = 1 - (1-beta)**I2
     obs2 = Binomial("obs2",n=I2,p=reporting,observed=Iobs2)
 
     
-    I3 = Binomial("I3",n=S2,p=Psi) 
+    I3 = Binomial("I3",n=S2,p=Psi23) 
     S3 = S2 - I3
-    Psi = 1 - (1-beta)**I3
+    Psi34 = 1 - (1-beta)**I3
     obs3 = Binomial("obs3",n=I3,p=reporting,observed=Iobs3) 
     
-    I4 = Binomial("I4",n=S3,p=Psi) 
+    I4 = Binomial("I4",n=S3,p=Psi34) 
     S4 = S3 - I4
-    Psi = 1 - (1-beta)**I4
+    Psi45 = 1 - (1-beta)**I4
     obs4 = Binomial("obs4",n=I4,p=reporting,observed=Iobs4) 
     
-    I5 = Binomial("I5",n=S4,p=Psi) 
+    I5 = Binomial("I5",n=S4,p=Psi45) 
     S5 = S4 - I5
-    Psi = 1 - (1-beta)**I5
+    Psi56 = 1 - (1-beta)**I5
     obs5 = Binomial("obs5",n=I5,p=reporting,observed=Iobs5) 
 
 map_estimate = find_MAP(model=basic_model)
@@ -114,7 +114,7 @@ with basic_model:
     step = Slice(vars=[N0,I2,I3,I4,I5]) 
 
     # draw 1000 posterior samples
-    trace = sample(1000, start=start) 
+    trace = sample(1000, step=step, start=start) 
     
 summary(trace)
 
