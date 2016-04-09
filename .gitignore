@@ -3,3 +3,7 @@ makestuff/
 *.Rout
 *.[r]
 *.png
+*~
+
+
+pymc3/

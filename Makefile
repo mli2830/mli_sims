@@ -1,6 +1,6 @@
 ### Hooks for the editor to set the default target
-current: pymc2.html
-	open pymc2.html
+current: fastmatcomputation.html
+	open fastmatcomputation.html
 	say -v Vicki "complete"
 
 target pngtarget pdftarget vtarget acrtarget: pymc.html
@@ -20,7 +20,7 @@ Sources = Makefile .gitignore README.md LICENSE.md journal.txt
 Sources += $(wildcard *.rmd)
 Archive += multivariate.html
 
-multivariate.html: multivariate.rmd
+%.html: %.rmd
 	say -v Trinoids "complete"
 
 pymc.html: pymc.rmd

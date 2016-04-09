@@ -1,0 +1,104 @@
+---
+title: "Fast matrix Computation"
+date: "`r format(Sys.time(), '%H:%M %d %B %Y ')`"
+author: Michael Li
+---
+
+#Problem
+
+Given a vector $V$ length $a$ and a matrix $M$ with dimension $a$ by $b$ and an integrating function that takes two parameters $x$ and $y$ where ($x=v_i$ from $V$ and $y=m_{i,j}$ from $M$) and computes a number. We want to computate the integrating function across the vector and matrix and return an matrix of integrated results (it should be the same dimension as the input matrix. 
+
+KL claims mapply/apply family is slow. M.Li is going to do it the Hadley way via dplyr/tidyr
+
+```{r pkgs, warning=FALSE, message=FALSE}
+library(dplyr)
+library(tidyr)
+```
+
+First we should simulate an example to play around with
+
+```{r sim}
+
+mat <- matrix(sample(1:10,21*20000,replace=T), nrow=21)
+vec <- 20:0
+
+sumfun <- function(x,y){
+  return(x+y)
+}
+
+```
+
+I am just working with the style I am most comfortable with which is a data frame. At the end of the day, we want a result matrix, thus, working within a data frame is not a crazy idea.
+
+```{r hadley magic}
+df <- data.frame(row_id=1:nrow(mat),vec,mat)
+
+t1 <- proc.time()
+df2 <- (df 
+  %>% gather(column_name,matvalue,3:ncol(.)) 
+  %>% rowwise() 
+  %>% mutate(sum = sumfun(vec,matvalue)) 
+  %>% ungroup()  
+  %>% select(-c(matvalue)) 
+  %>% spread(column_name,sum)
+)
+t2 <- proc.time()
+t2-t1
+
+```
+
+I claim that is the amount of time it took to computate the task and it seems really fast. So what kind of magic did I just do?
+
+Let's rewind with a simpler example
+
+```{r step through 1}
+
+mat <- matrix(sample(1:10,3*2,replace=T), nrow=3)
+vec <- c(1,2,1)
+df <- data.frame(row_id=1:nrow(mat),vec,mat)
+print(df)
+
+```
+
+I am combining the vector and matrix into a data frame. row_id is very important and it is the key to make this work.
+
+```{r st2}
+df2 <- (df 
+  %>% gather(column_name,matvalue,3:ncol(.)) 
+)
+print(df2)
+```
+
+This is the hadley version of melt in the reshape2 package. I want to de-matrix the matrix and have TWO key columns for the parameters of the function. I will explain the reason why I want TWO key columns later. 
+
+```{r st3}
+
+df2 <- (df 
+  %>% gather(column_name,matvalue,3:ncol(.)) 
+  %>% rowwise() 
+  %>% mutate(sum = sumfun(vec,matvalue)) 
+)
+print(df2)
+```
+
+rowwise() will treat every row independently (I am not sure if we actually need it but it is good to know this function, if you do something like mean/sum, it will compute on all the rows (iem sum(r1 to r6) vs sum(r1))). call the function in with mutate. The reason I "melt" into the TWO key column is because I don't want to mutate/transmuate every column. (ie, I can do this if I don't melt X1=sumfun(vec,X1), X2=sumfun(vec,X2), and so on)
+
+```{r st4}
+
+df2 <- (df 
+  %>% gather(column_name,matvalue,3:ncol(.)) 
+  %>% rowwise() 
+  %>% mutate(sum = sumfun(vec,matvalue)) 
+  %>% ungroup()  
+  %>% select(-c(matvalue)) 
+  %>% spread(column_name,sum)
+)
+
+print(df2)
+print(mat)
+```
+
+ungroup() means I don't want to treat every row independently (or into their own groups) anymore. Remove the matvalue column (removing the orginal mat), because we already computated the results. Spread is reshape2's dcast, it will transform it back to it's orginal columns. Note, if you don't have the rowid column, this will not work. At this point, you can "select(-c(rowid,vec)" if you want to get just the results matrix. 
+
+
+
