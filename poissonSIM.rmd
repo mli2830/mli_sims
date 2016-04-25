@@ -1,0 +1,60 @@
+---
+title: "Poisson Epidemic Simulator"
+author: Michael Li
+date: "`r format(Sys.time(), '%H:%M %d %B %Y')`"
+---
+  
+I am trying to hard code a Poisson process-process and Poisson observation process to fit in JAGS. I want to make sure this "model" can simulate relatively similar data as my chain binomial/ beta-binomial. 
+
+Unlike the binomial family, the Poisson family do not have a population limit and assumes it has an infinite population. Let's create a very simple simulator and assume:
+
+$I_{t} \sim Poisson(I_{t-1})$
+
+Where the mean is the number of infectants of the previous time step (will change later, I don't think it is a stupid idea at this point).
+
+At this point, I am not even going to worry about the observation process because the "process-process" doesn't look right yet. I also do not know how to add FOI / probability of adequate contact per infective. 
+
+Doesn't the poisson automatically handles this? ie: $P(X) = Poisson(\lambda)$ is probability of X new infectants in the new time step. 
+
+```{r pkg,warning=FALSE,message=FALSE}
+library(ggplot2)
+```
+
+Simulator
+
+```{r simulator,warning=FALSE,message=FALSE}
+simm <- function(i0=10,numobs=20,repMean=0.5,shapeP=0.1,seed=NULL){
+  if (!is.null(seed)) set.seed(seed)
+  tvec <- seq(1,numobs)
+  n <- length(tvec)
+  I <- Iobs <- IMean <- numeric(n)
+  
+  I[1] <- i0
+#  pShape <- rgamma(1,shape=shapeP,rate=shapeP)
+#  IMean[1] <- rgamma(1,shape=pShape,rate=pShape/I[1])
+  IMean[1] <- I[1]
+  Iobs[1] <- rpois(1,repMean*I[1])
+  
+  for (t in 2:n){
+    I[t] <- rpois(1,IMean[t-1])
+#    IMean[t] <- rgamma(1,shape=pShape,rate=pShape/I[t])
+    IMean[t] <-I[t]
+    Iobs[t] <- rpois(1,repMean*I[t])
+  }
+  
+  data.frame(time=tvec, I, Iobs,IMean)
+}
+```
+
+Simulate a couple of plots via changing seeds
+
+```{r plots,warning=FALSE,message=FALSE}
+
+p1 <- ggplot(simm(seed=101),aes(x=time,y=I)) + geom_line()
+
+p1
+p1 %+% simm(seed=108)
+p1 %+% simm(seed=110)
+
+```
+
