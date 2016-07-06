@@ -1,0 +1,156 @@
+---
+title: "Modelling Panther movements using moveHMM"
+author: Michael Li
+date: "`r format(Sys.time(), '%H:%M %d %B %Y')`"
+---
+
+# Intro / Testing moveHMM
+
+moveHMM is a lot faster than depmixS4. I am going to try to replicate the BIC plots via moveHMM. 
+
+```{r packages,warning=FALSE,message=FALSE}
+t1 <- proc.time()
+library(moveHMM)
+library(dplyr)
+library(ggplot2)
+dat <- read.csv("ArchivePantherData.csv")
+
+timenames <- levels(dat$Time)
+dat$Time <- factor(dat$Time,levels=timenames,labels=0:23)
+```
+
+moveHMM requires a _moveData_ object for data frame. It takes the raw coordinates and computate the step length and turning angle using the _prepData_ function. Note: we can't simply feed out dataset in the fitting function, therefore, I class hack our dataframe. 
+```{r dataframe, wearning=FALSE,message=FALSE}
+class(dat) <- c("moveData","data.frame")
+```
+Lets keep it consistent with our workflow and use one cat at a time. Note, we can feed all the cats in at once, but let's save that for later.
+
+```{r subseting}
+cat1 <- dat %>% filter(animal_id==1) %>% transmute(time=Time,
+                                                    step=Steplength.m.,
+                                                    angle=NA)
+## err 
+class(cat1) <- c("moveData","data.frame")
+```
+
+Unlike depmixS4, we have to provide the starting parameters of each state. Let's keep it simple and start with two states. We can't fit univariate step-length HMMs, we can only fit multivariate step-length and turning angle HMMs. I can come up with three simple solution around this:
+
+- change the turning angles to NA
+- change the turning angles to 0 and give a very narrow VM distribution (ie. VM(0,1000)) for all states 
+- just ignore it and hope it will not _bias_ the results
+
+I like the first and second option the most. 
+```{r parameters}
+mu0 <- c(0,1)
+sd0 <- c(0.1,0.5)
+z0 <- c(0.1,0.2) ## not sure
+step0 <- c(mu0,sd0,z0)
+
+angleMean0 <- c(0,0)
+kappa0 <- c(10000,10000)
+
+angle0 <- c(angleMean0,kappa0)
+
+hmm2s <- fitHMM(data=cat1,nbStates=2,stepPar0=step0,anglePar0=angle0,
+                stepDist = "lnorm", angleDist = "vm",
+                formula = ~ 1)
+                
+hmm2s
+
+## log-likelihood
+hmm2s$mod$minimum
+
+```
+
+
+# Panther BIC results
+
+```{r functions,echo=FALSE,warning=FALSE}
+
+hmm <- function(n,dd){
+  mu0 <- c(0:(n-1))
+  sd0 <- rep(0.2,n)
+  z0 <- rep(0.1,n)
+  step0 <- c(mu0,sd0,z0)
+  angle0 <- rep(c(0,10000),each=n)
+  mod <- fitHMM(data=dd,nbStates=n,stepPar0=step0,anglePar0=angle0,
+                stepDist = "lnorm", angleDist = "vm",
+                formula = ~ 1)
+  return(mod)
+}
+
+hmm2s <- hmm(2,cat1)
+hmm3s <- hmm(3,cat1)
+hmm4s <- hmm(4,cat1)
+hmm5s <- hmm(5,cat1)
+hmm6s <- hmm(6,cat1)
+hmm7s <- hmm(7,cat1)
+hmm8s <- hmm(8,cat1)
+hmm9s <- hmm(9,cat1)
+
+hmmnum <- function(s){
+  return(s^2 + 2*s -1)
+}
+
+hmmsinnum <- function(s){
+  return(3*s^2 - 1)
+}
+
+moveBIChmm <- function(mm,ns){
+  n <- nrow(mm[[1]])
+  ll <- mm[[3]][[1]]
+  k <- hmmnum(ns)
+  
+  BIC <- -2*ll + k*log(n)
+  return(BIC)
+}
+
+movell <- function(mm){
+  return(mm[[3]][[1]])
+}
+fitlist <- list(hmm2s,hmm3s,hmm4s,hmm5s,hmm6s,hmm7s,hmm8s,hmm9s)
+library(dplyr)
+hmmdf <- data.frame(nstates = 2:9
+  , freepars = hmmnum(2:9)
+  , ll = -1*unlist(lapply(fitlist,movell))
+  , nobs = nrow(cat1)
+) %>% mutate(BIC = 2*ll + freepars*log(nobs))
+
+ggplot(hmmdf,aes(x=nstates,y=ll))+geom_point()+geom_line()
+
+```
+
+I did a bunch of BIC stuff too, but the free parameter calcuation is wrong (ie. not sure if I should include the 2n turning angle parameters and n zero-inflation parameters). You can see the problem by looking at the log-likelihood because it is not asymptotic. If you want to play around with it, you can try running states 2 to 5, fitting 7+ will take much more time.
+
+```{r end time,echo=FALSE}
+t2 <- proc.time()
+t2-t1
+```
+
+# Testing time-heterogeneous HMMs
+```{r testing time-het}
+hmmsin <- function(n,dd){
+  mu0 <- c(0:(n-1))
+  sd0 <- rep(0.2,n)
+  z0 <- rep(0.1,n)
+  step0 <- c(mu0,sd0,z0)
+  angle0 <- rep(c(0,10000),each=n)
+  mod <- fitHMM(data=dd,nbStates=n,stepPar0=step0,anglePar0=angle0,
+                stepDist = "lnorm", angleDist = "vm",
+                formula = ~ cos(2*pi*(as.numeric(time)-1)/24)+ sin(2*pi*(as.numeric(time)-1)/24))
+  return(mod)
+}
+
+hmmsin2s <- hmmsin(2,cat1)
+hmmsin3s <- hmmsin(3,cat1)
+hmmsin4s <- hmmsin(4,cat1)
+
+movell(hmm2s)
+movell(hmmsin2s)
+movell(hmm3s)
+movell(hmmsin3s)
+movell(hmm4s)
+movell(hmmsin4s)
+```
+
+I think something is wrong with 2 and 3 state models. Maybe that is the reason why the log-likelihood plot does not look asymptotic.
