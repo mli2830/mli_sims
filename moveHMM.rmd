@@ -51,8 +51,8 @@ kappa0 <- c(10000,10000)
 
 angle0 <- c(angleMean0,kappa0)
 
-hmm2s <- fitHMM(data=cat1,nbStates=2,stepPar0=step0,anglePar0=angle0,
-                stepDist = "lnorm", angleDist = "vm",
+hmm2s <- fitHMM(data=cat1,nbStates=2,stepPar0=step0,anglePar0=NULL,
+                stepDist = "lnorm", angleDist = "none",
                 formula = ~ 1)
                 
 hmm2s
@@ -73,8 +73,8 @@ hmm <- function(n,dd){
   z0 <- rep(0.1,n)
   step0 <- c(mu0,sd0,z0)
   angle0 <- rep(c(0,10000),each=n)
-  mod <- fitHMM(data=dd,nbStates=n,stepPar0=step0,anglePar0=angle0,
-                stepDist = "lnorm", angleDist = "vm",
+  mod <- fitHMM(data=dd,nbStates=n,stepPar0=step0,anglePar0=NULL,
+                stepDist = "lnorm", angleDist = "none",
                 formula = ~ 1)
   return(mod)
 }
@@ -135,8 +135,8 @@ hmmsin <- function(n,dd){
   z0 <- rep(0.1,n)
   step0 <- c(mu0,sd0,z0)
   angle0 <- rep(c(0,10000),each=n)
-  mod <- fitHMM(data=dd,nbStates=n,stepPar0=step0,anglePar0=angle0,
-                stepDist = "lnorm", angleDist = "vm",
+  mod <- fitHMM(data=dd,nbStates=n,stepPar0=step0,anglePar0=NULL,
+                stepDist = "lnorm", angleDist = "none",
                 formula = ~ cos(2*pi*(as.numeric(time)-1)/24)+ sin(2*pi*(as.numeric(time)-1)/24))
   return(mod)
 }
