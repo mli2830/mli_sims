@@ -1,0 +1,39 @@
+---
+title: "TSIR"
+date: "`r format(Sys.time(), '%H:%M %d %B %Y ')`"
+author: Michael Li
+---
+
+## Problem
+
+I am trying to figure out why the hybrid TSIR chain binomial is overshooting the estimates (See [poster](https://github.com/wzmli/lunchbox/blob/master/EEID_Final_Mike.pdf). If it doesn't work, just refresh the page.). To simplify the problem more, let's keep it simple and not **hybridize**, only use the binomial distribution for both processes, and use **Jags** for now.
+
+## Jags Results 
+Using the same parameters as the models in the poster, here are the plots/chains for the discrete latent state chain binomial. _Note_ I used stronger priors for the poster and uninformative priors ($Beta(1,1)$) for $effprop$ and $repMean$. I also used the _true_ parameters as the initial starting point to see if we can even estimate the parameters given we have a good starting point.
+
+###Parameters
+- R0 = 2
+- effprop = 0.7, (effective proportion of population)
+- repMean = 0.4, (reporting mean/probability) 
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(R2jags)
+load("./lunchbox/.dis.jags.B.B.fit.RData")
+JagsDiscrete
+plot(JagsDiscrete)
+traceplot(JagsDiscrete)
+```
+
+The mixing are pretty bad for $repMean$.
+
+## Broad Questions
+- Can hybrid + HMC _really_ handle correlated parameters?
+- Is this a problem of unidentifiability/ weak unidentifiability?
+
+## Instructions to reproduce the plots above
+- **clone/pull** the latest version of [lunchbox](https://github.com/wzmli/lunchbox)
+- type **make** (the first time will clone JD's makestuff)
+- type **make** (the second time will simulate and fit the model)
+
+
+
