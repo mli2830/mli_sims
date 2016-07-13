@@ -18,25 +18,39 @@ The Reed-Frost model is a discrete-time SIR model that assumes recovery one time
 $$
 S_{1} = N - I_{1}
 \\
-I_{t} \sim \textrm{Binomial}(prob = 1-(1-\beta)^{I_{t-1}} ,size=S_{t-1})
+I_{t} \sim \textrm{Binomial}(\textrm{prob} = 1-(1-\beta)^{I_{t-1}} , \textrm{size}=S_{t-1})
 \\
 S_{t} = S_{t-1} - I_{t}
 $$
 
-We modified the RF model as a _latent_ binomial process and added an observation process with reporting probability $r$ 
+We modified the RF model as a _latent_ binomial process and added an observation process with reporting probability $r$ and assumed $N_{e}$ is an effective population with an effective proportion $\alpha$ of the upper limit population size _N_. The modified RF model can be written as:
+
+$$
+N_{e} \sim \textrm{Binomial}(\textrm{prob} = \alpha, \textrm{size}=N)
+\\
+S_{1} = N_{e} - I_{1}
+\\
+I_{t} \sim \textrm{Binomial}(\textrm{prob} = 1-(1-\beta)^{I_{t-1}} , \textrm{size}=S_{t-1})
+\\
+Obs_{t} \sim \textrm{Binomial}(\textrm{prob}=r,\textrm{size}=I_{t})
+\\
+S_{t} = S_{t-1} - I_{t}
+$$
+
 ## Jags Results 
 Using the same parameters as the models in the poster, here are the plots/chains for the discrete latent state chain binomial. _Note_ I used stronger priors for the poster and uninformative priors (Beta(1,1)) for _effprop_ and _repMean_. I also used the _true_ parameters as the initial starting point to see if we can even estimate the parameters given we have a good starting point.
 
 ###Parameters
-- R0 = 2
-- effprop = 0.7, (effective proportion of population)
-- repMean = 0.4, (reporting mean/probability) 
+- $R_{0} = 2$
+- $\beta = 0.7 $ (effective proportion of population)
+- $ r = 0.4 $ , (reporting mean/probability) 
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 library(R2jags)
 load("./lunchbox/.dis.jags.B.B.fit.RData")
 JagsDiscrete
 plot(JagsDiscrete)
+par(mfrow=c(2,2))
 traceplot(JagsDiscrete)
 ```
 

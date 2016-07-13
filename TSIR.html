@@ -69,7 +69,7 @@ img {
 <div id="header">
 <h1 class="title">TSIR</h1>
 <h4 class="author"><em>Michael Li</em></h4>
-<h4 class="date"><em>21:53 12 July 2016</em></h4>
+<h4 class="date"><em>11:35 13 July 2016</em></h4>
 </div>
 
 
@@ -85,18 +85,33 @@ img {
 <p><span class="math display">\[
 S_{1} = N - I_{1}
 \\
-I_{t} \sim \textrm{Binomial}(prob = 1-(1-\beta)^{I_{t-1}} ,size=S_{t-1})
+I_{t} \sim \textrm{Binomial}(\textrm{prob} = 1-(1-\beta)^{I_{t-1}} , \textrm{size}=S_{t-1})
 \\
 S_{t} = S_{t-1} - I_{t}
 \]</span></p>
-<p>We modified the RF model as a <em>latent</em> binomial process and added an observation process with reporting probability <span class="math inline">\(r\)</span> ## Jags Results Using the same parameters as the models in the poster, here are the plots/chains for the discrete latent state chain binomial. <em>Note</em> I used stronger priors for the poster and uninformative priors (Beta(1,1)) for <em>effprop</em> and <em>repMean</em>. I also used the <em>true</em> parameters as the initial starting point to see if we can even estimate the parameters given we have a good starting point.</p>
+<p>We modified the RF model as a <em>latent</em> binomial process and added an observation process with reporting probability <span class="math inline">\(r\)</span> and assumed <span class="math inline">\(N_{e}\)</span> is an effective population with an effective proportion <span class="math inline">\(\alpha\)</span> of the upper limit population size <em>N</em>. The modified RF model can be written as:</p>
+<p><span class="math display">\[
+N_{e} \sim \textrm{Binomial}(\textrm{prob} = \alpha, \textrm{size}=N)
+\\
+S_{1} = N_{e} - I_{1}
+\\
+I_{t} \sim \textrm{Binomial}(\textrm{prob} = 1-(1-\beta)^{I_{t-1}} , \textrm{size}=S_{t-1})
+\\
+Obs_{t} \sim \textrm{Binomial}(\textrm{prob}=r,\textrm{size}=I_{t})
+\\
+S_{t} = S_{t-1} - I_{t}
+\]</span></p>
 </div>
+</div>
+<div id="jags-results" class="section level2">
+<h2>Jags Results</h2>
+<p>Using the same parameters as the models in the poster, here are the plots/chains for the discrete latent state chain binomial. <em>Note</em> I used stronger priors for the poster and uninformative priors (Beta(1,1)) for <em>effprop</em> and <em>repMean</em>. I also used the <em>true</em> parameters as the initial starting point to see if we can even estimate the parameters given we have a good starting point.</p>
 <div id="parameters" class="section level3">
 <h3>Parameters</h3>
 <ul>
-<li>R0 = 2</li>
-<li>effprop = 0.7, (effective proportion of population)</li>
-<li>repMean = 0.4, (reporting mean/probability)</li>
+<li><span class="math inline">\(R_{0} = 2\)</span></li>
+<li>$= 0.7 $ (effective proportion of population)</li>
+<li>$ r = 0.4 $ , (reporting mean/probability)</li>
 </ul>
 <pre><code>## Inference for Bugs model at &quot;dis.B.B.buggen&quot;, fit using jags,
 ##  4 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10
