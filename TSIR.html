@@ -69,7 +69,7 @@ img {
 <div id="header">
 <h1 class="title">TSIR</h1>
 <h4 class="author"><em>Michael Li</em></h4>
-<h4 class="date"><em>13:03 12 July 2016</em></h4>
+<h4 class="date"><em>21:53 12 July 2016</em></h4>
 </div>
 
 
@@ -77,9 +77,20 @@ img {
 <h2>Problem</h2>
 <p>I am trying to figure out why the hybrid TSIR chain binomial is overshooting the estimates (See <a href="https://github.com/wzmli/lunchbox/blob/master/EEID_Final_Mike.pdf">poster</a>. If it doesn’t work, just refresh the page.). To simplify the problem more, let’s keep it simple and not <strong>hybridize</strong>, only use the binomial distribution for both processes, and use <strong>Jags</strong> for now.</p>
 </div>
-<div id="jags-results" class="section level2">
-<h2>Jags Results</h2>
-<p>Using the same parameters as the models in the poster, here are the plots/chains for the discrete latent state chain binomial. <em>Note</em> I used stronger priors for the poster and uninformative priors (<span class="math inline">\(Beta(1,1)\)</span>) for <span class="math inline">\(effprop\)</span> and <span class="math inline">\(repMean\)</span>. I also used the <em>true</em> parameters as the initial starting point to see if we can even estimate the parameters given we have a good starting point.</p>
+<div id="discrete-latent-state-tsir-chain-binomial" class="section level2">
+<h2>Discrete Latent State TSIR Chain Binomial</h2>
+<div id="model" class="section level3">
+<h3>Model</h3>
+<p>The Reed-Frost model is a discrete-time SIR model that assumes recovery one time step after infection. Let <span class="math inline">\(N\)</span> be the population size, <span class="math inline">\(I_{1}\)</span> be the initial number of infectives, <span class="math inline">\(\beta\)</span> be the probability of adequate contact per infective, then the RF model can be written as:</p>
+<p><span class="math display">\[
+S_{1} = N - I_{1}
+\\
+I_{t} \sim \textrm{Binomial}(prob = 1-(1-\beta)^{I_{t-1}} ,size=S_{t-1})
+\\
+S_{t} = S_{t-1} - I_{t}
+\]</span></p>
+<p>We modified the RF model as a <em>latent</em> binomial process and added an observation process with reporting probability <span class="math inline">\(r\)</span> ## Jags Results Using the same parameters as the models in the poster, here are the plots/chains for the discrete latent state chain binomial. <em>Note</em> I used stronger priors for the poster and uninformative priors (Beta(1,1)) for <em>effprop</em> and <em>repMean</em>. I also used the <em>true</em> parameters as the initial starting point to see if we can even estimate the parameters given we have a good starting point.</p>
+</div>
 <div id="parameters" class="section level3">
 <h3>Parameters</h3>
 <ul>
