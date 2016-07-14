@@ -23,7 +23,7 @@ I_{t} \sim \textrm{Binomial}(\textrm{prob} = 1-(1-\beta)^{I_{t-1}} , \textrm{siz
 S_{t} = S_{t-1} - I_{t}
 $$
 
-We modified the RF model as a _latent_ binomial process and added an observation process with reporting probability $r$ and assumed $N_{e}$ is an effective population with an effective proportion $\alpha$ of the upper limit population size _N_. The modified RF model can be written as:
+We modified the RF model as a _latent_ binomial process and added an observation process with reporting probability $r$ and assumed $N_{e}$ is from an effective population with an effective proportion $\alpha$ of the upper limit population size _N_. The modified RF model can be written as:
 
 $$
 N_{e} \sim \textrm{Binomial}(\textrm{prob} = \alpha, \textrm{size}=N)
@@ -38,12 +38,20 @@ S_{t} = S_{t-1} - I_{t}
 $$
 
 ## Jags Results 
-Using the same parameters as the models in the poster, here are the plots/chains for the discrete latent state chain binomial. _Note_ I used stronger priors for the poster and uninformative priors (Beta(1,1)) for _effprop_ and _repMean_. I also used the _true_ parameters as the initial starting point to see if we can even estimate the parameters given we have a good starting point.
+Using the same parameters as the models in the poster, here are the plots/chains for the discrete latent state chain binomial. _Note_ I used stronger priors for the poster and uninformative priors _Beta(1,1)_ for $\alpha$_ and $r$. I also used the _true_ parameters as the initial starting point to see if we can even estimate the parameters given we have a good starting point.
 
 ###Parameters
 - $R_{0} = 2$
-- $\beta = 0.7 $ (effective proportion of population)
-- $ r = 0.4 $ , (reporting mean/probability) 
+- $\beta = 0.7 , \textrm{(effective proportion of population)}$
+- $r = 0.4 , \textrm{(reporting mean/probability)}$
+
+The code is here:
+
+- [Simulator](https://github.com/wzmli/lunchbox/blob/master/simulators/simulator.CB.R)
+- [Bugs script](https://github.com/wzmli/lunchbox/blob/master/dis.B.B.buggen)
+- [Parameters](https://github.com/wzmli/lunchbox/blob/master/parameters.CBB.R)
+- [Run Jags](https://github.com/wzmli/lunchbox/blob/master/Jags.CB.R)
+
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 library(R2jags)
@@ -53,12 +61,6 @@ plot(JagsDiscrete)
 par(mfrow=c(2,2))
 traceplot(JagsDiscrete)
 ```
-
-The mixing are pretty bad for $repMean$.
-
-## Broad Questions
-- Can hybrid + HMC _really_ handle correlated parameters?
-- Is this a problem of unidentifiability/ weak unidentifiability?
 
 ## Instructions to reproduce the plots above
 - **clone/pull** the latest version of [lunchbox](https://github.com/wzmli/lunchbox)
