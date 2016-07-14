@@ -45,7 +45,7 @@ Using the same parameters as the models in the poster, here are the plots/chains
 - $\beta = 0.7 , \textrm{(effective proportion of population)}$
 - $r = 0.4 , \textrm{(reporting mean/probability)}$
 
-The code is here:
+The codes are here (todo: change parameter names to be consistent with write-up):
 
 - [Simulator](https://github.com/wzmli/lunchbox/blob/master/simulators/simulator.CB.R)
 - [Bugs script](https://github.com/wzmli/lunchbox/blob/master/dis.B.B.buggen)
