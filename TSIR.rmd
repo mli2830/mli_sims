@@ -6,7 +6,7 @@ author: Michael Li
 
 ## Problem
 
-I am trying to figure out why the hybrid TSIR chain binomial is overshooting the estimates (See [poster](https://github.com/wzmli/lunchbox/blob/master/EEID_Final_Mike.pdf). If it doesn't work, just refresh the page.). To simplify the problem more, let's keep it simple and not **hybridize**, only use the binomial distribution for both processes, and use **Jags** for now.
+I am trying to figure out why the hybrid TSIR chain binomial is overshooting the estimates (See [poster](https://github.com/wzmli/lunchbox/blob/master/EEID_Final_Mike.pdf). If it doesn't work, just refresh the page.). Let's step through it starting from the very beginning.
 
 
 ## Discrete Latent State TSIR Chain Binomial
@@ -37,7 +37,7 @@ Obs_{t} \sim \textrm{Binomial}(\textrm{prob}=r,\textrm{size}=I_{t})
 S_{t} = S_{t-1} - I_{t}
 $$
 
-## Jags Results 
+## Jags Discrete Latent State Model Results 
 Using the same parameters as the models in the poster, here are the plots/chains for the discrete latent state chain binomial. _Note_ I used stronger priors for the poster and uninformative priors _Beta(1,1)_ for $\alpha$ and $r$. I also used the _true_ parameters as the initial starting point to see if we can even estimate the parameters given we have a good starting point.
 
 ###Parameters
@@ -53,19 +53,50 @@ The codes are here (todo: change parameter names to be consistent with write-up)
 - [Run Jags](https://github.com/wzmli/lunchbox/blob/master/Jags.CB.R)
 
 
+#### Instructions to reproduce the plots above
+- **clone/pull** the latest version of [lunchbox](https://github.com/wzmli/lunchbox)
+- type **make** (the first time will clone JD's makestuff)
+- type **make** (the second time will simulate and fit the model)
+
+
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 library(R2jags)
 load("./lunchbox/.dis.jags.B.B.fit.RData")
 JagsDiscrete
 plot(JagsDiscrete)
-par(mfrow=c(2,2))
-traceplot(JagsDiscrete)
+traceplot(JagsDiscrete,mfrow=c(2,2))
 ```
+We can see clearly from the traceplots _r_ is not mixing well.
 
-## Instructions to reproduce the plots above
-- **clone/pull** the latest version of [lunchbox](https://github.com/wzmli/lunchbox)
-- type **make** (the first time will clone JD's makestuff)
-- type **make** (the second time will simulate and fit the model)
+## Hybrid model
+
+The orginal idea of hybridization was to improve the mixing for _r_ with some sort of **Scaling trick/ cliff**. We later realized we can take this even furtherand use a more powerful MCMC algorithm (Hamiltonian Monte Carlo). For now, let's try to figure out the problem in **JAGS**  
+
+First we want to change the discrete latent process to continuous by setting the first and second moment (moment-matching (MM)) of the binomial distribution to a continuous distribution (ie. gamma in this case) and observation process to a poisson process (more detail on why possion). 
+\\
+_... skip all the moment-matching algebra ..._ 
+\\
+We can rewrite the model (todo: reference equation/system of equations?)  as:
+
+$$
+N_{e} \sim \textrm{Binomial}(\alpha,N)
+\\
+S_{1} = N_{e} - I_{1}
+\\
+I_{t} \sim \textrm{Gamma}(\textrm{shape} = \textrm{prob}\times S_{t-1} \times \textrm{rate}, \textrm{rate}= \frac{1}{1-\textrm{prob}})
+\\
+Obs_{t} \sim \textrm{Poisson}(\textrm{mean}=r \times I_{t})
+\\
+S_{t} = S_{t-1} - I_{t}
+$$
+
+## JAGS Hybrid Model Results
+
+The codes are here (fake place holders):
+
+- [Bugs script](https://github.com/wzmli/lunchbox/blob/master/dis.B.B.buggen)
+- [Run Jags](https://github.com/wzmli/lunchbox/blob/master/Jags.CB.R)
+
 
 
 
