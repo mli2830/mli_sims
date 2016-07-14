@@ -58,6 +58,7 @@ The codes are here (todo: change parameter names to be consistent with write-up)
 - type **make** (the first time will clone JD's makestuff)
 - type **make** (the second time will simulate and fit the model)
 
+We can see clearly from the traceplots _r_ is not mixing well.
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 library(R2jags)
@@ -66,7 +67,7 @@ JagsDiscrete
 plot(JagsDiscrete)
 traceplot(JagsDiscrete,mfrow=c(2,2))
 ```
-We can see clearly from the traceplots _r_ is not mixing well.
+
 
 ## Hybrid model
 
