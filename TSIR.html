@@ -69,7 +69,7 @@ img {
 <div id="header">
 <h1 class="title">TSIR</h1>
 <h4 class="author"><em>Michael Li</em></h4>
-<h4 class="date"><em>14:04 14 July 2016</em></h4>
+<h4 class="date"><em>14:09 14 July 2016</em></h4>
 </div>
 
 
@@ -149,7 +149,9 @@ S_{t} = S_{t-1} - I_{t}
 <div id="hybrid-model" class="section level2">
 <h2>Hybrid model</h2>
 <p>The orginal idea of hybridization was to improve the mixing for <em>r</em> with some sort of <strong>Scaling trick/ cliff</strong>. We later realized we can take this even furtherand use a more powerful MCMC algorithm (Hamiltonian Monte Carlo). For now, let’s try to figure out the problem in <strong>JAGS</strong></p>
-<p>First we want to change the discrete latent process to continuous by setting the first and second moment (moment-matching (MM)) of the binomial distribution to a continuous distribution (ie. gamma in this case) and observation process to a poisson process (more detail on why possion). \ <em>… skip all the moment-matching algebra …</em> \ We can rewrite the model (todo: reference equation/system of equations?) as:</p>
+<p>First we want to change the discrete latent process to continuous by setting the first and second moment (moment-matching (MM)) of the binomial distribution to a continuous distribution (ie. gamma in this case) and observation process to a poisson process (more detail on why possion).</p>
+<p><em>… skip all the moment-matching algebra …</em></p>
+<p>We can rewrite the model (todo: reference equation/system of equations?) as:</p>
 <p><span class="math display">\[
 N_{e} \sim \textrm{Binomial}(\alpha,N)
 \\

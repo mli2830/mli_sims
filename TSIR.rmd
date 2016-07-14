@@ -73,9 +73,9 @@ We can see clearly from the traceplots _r_ is not mixing well.
 The orginal idea of hybridization was to improve the mixing for _r_ with some sort of **Scaling trick/ cliff**. We later realized we can take this even furtherand use a more powerful MCMC algorithm (Hamiltonian Monte Carlo). For now, let's try to figure out the problem in **JAGS**  
 
 First we want to change the discrete latent process to continuous by setting the first and second moment (moment-matching (MM)) of the binomial distribution to a continuous distribution (ie. gamma in this case) and observation process to a poisson process (more detail on why possion). 
-\\
+
 _... skip all the moment-matching algebra ..._ 
-\\
+
 We can rewrite the model (todo: reference equation/system of equations?)  as:
 
 $$
