@@ -38,7 +38,7 @@ S_{t} = S_{t-1} - I_{t}
 $$
 
 ## Jags Results 
-Using the same parameters as the models in the poster, here are the plots/chains for the discrete latent state chain binomial. _Note_ I used stronger priors for the poster and uninformative priors _Beta(1,1)_ for $\alpha$_ and $r$. I also used the _true_ parameters as the initial starting point to see if we can even estimate the parameters given we have a good starting point.
+Using the same parameters as the models in the poster, here are the plots/chains for the discrete latent state chain binomial. _Note_ I used stronger priors for the poster and uninformative priors _Beta(1,1)_ for $\alpha$ and $r$. I also used the _true_ parameters as the initial starting point to see if we can even estimate the parameters given we have a good starting point.
 
 ###Parameters
 - $R_{0} = 2$
