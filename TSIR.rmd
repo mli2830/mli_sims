@@ -101,7 +101,7 @@ The codes are here:
 - [Run Jags](https://github.com/wzmli/lunchbox/blob/master/hybrid/jags.R)
 
 #### Instructions to reproduce the plots below
-- type **make dis.jags.fit.Rout** (the second time will simulate and fit the model)
+- type **make hyb.jags.fit.Rout** (given you already did the first two step before)
 
 _r_ (aka _repMean_) is still mixing poorly. HELP!
 
