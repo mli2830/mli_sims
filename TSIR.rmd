@@ -13,6 +13,8 @@ I am trying to figure out why the hybrid TSIR chain binomial is overshooting the
 
 ### Model
 
+_ I didn't change the parameter names in the code (I will for the paper later... I just want to get over this wall for now and be semi-formal at the same time. So $\alpha = effprop$, r is repMean,$\beta = \textrm{exp}(-R0/N)$_
+
 The Reed-Frost model is a discrete-time SIR model that assumes recovery one time step after infection. Let $N$ be the population size, $I_{1}$ be the initial number of infectives, $\beta$ be the probability of adequate contact per infective, then the RF model can be written as:
 
 $$
@@ -50,19 +52,19 @@ The codes are here (todo: change parameter names to be consistent with write-up)
 - [Simulator](https://github.com/wzmli/lunchbox/blob/master/simulators/simulator.CB.R)
 - [Bugs script](https://github.com/wzmli/lunchbox/blob/master/dis.B.B.buggen)
 - [Parameters](https://github.com/wzmli/lunchbox/blob/master/parameters.CBB.R)
-- [Run Jags](https://github.com/wzmli/lunchbox/blob/master/Jags.CB.R)
+- [Run Jags](https://github.com/wzmli/lunchbox/blob/master/discrete/jags.R)
 
 
-#### Instructions to reproduce the plots above
+#### Instructions to reproduce the plots below
 - **clone/pull** the latest version of [lunchbox](https://github.com/wzmli/lunchbox)
 - type **make** (the first time will clone JD's makestuff)
-- type **make** (the second time will simulate and fit the model)
+- type **make dis.jags.fit.Rout** (the second time will simulate and fit the model)
 
 We can see clearly from the traceplots _r_ is not mixing well.
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 library(R2jags)
-load("./lunchbox/.dis.jags.B.B.fit.RData")
+load("./lunchbox/.dis.jags.fit.RData")
 JagsDiscrete
 plot(JagsDiscrete)
 traceplot(JagsDiscrete,mfrow=c(2,2))
@@ -71,7 +73,7 @@ traceplot(JagsDiscrete,mfrow=c(2,2))
 
 ## Hybrid model
 
-The orginal idea of hybridization was to improve the mixing for _r_ with some sort of **Scaling trick/ cliff**. We later realized we can take this even furtherand use a more powerful MCMC algorithm (Hamiltonian Monte Carlo). For now, let's try to figure out the problem in **JAGS**  
+The orginal idea of hybridization was to improve the mixing for _r_ with some sort of **Scaling trick/ cliff**. We later realized we can take this further and use a more powerful MCMC algorithm (Hamiltonian Monte Carlo). For now, let's try to figure out the problem in **JAGS**  
 
 First we want to change the discrete latent process to continuous by setting the first and second moment (moment-matching (MM)) of the binomial distribution to a continuous distribution (ie. gamma in this case) and observation process to a poisson process (more detail on why possion). 
 
@@ -93,11 +95,19 @@ $$
 
 ## JAGS Hybrid Model Results
 
-The codes are here (fake place holders):
+The codes are here:
 
-- [Bugs script](https://github.com/wzmli/lunchbox/blob/master/dis.B.B.buggen)
-- [Run Jags](https://github.com/wzmli/lunchbox/blob/master/Jags.CB.R)
+- [Bugs script](https://github.com/wzmli/lunchbox/blob/master/hyb.B.P.buggen)
+- [Run Jags](https://github.com/wzmli/lunchbox/blob/master/hybrid/jags.R)
 
+#### Instructions to reproduce the plots below
+- type **make dis.jags.fit.Rout** (the second time will simulate and fit the model)
 
+_r_ (aka _repMean_) is still mixing poorly. HELP!
 
-
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+load("./lunchbox/.hyb.jags.fit.RData")
+JagsHybrid
+plot(JagsHybrid)
+traceplot(JagsHybrid,mfrow=c(2,2))
+```
