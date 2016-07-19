@@ -69,7 +69,7 @@ img {
 <div id="header">
 <h1 class="title">TSIR</h1>
 <h4 class="author"><em>Michael Li</em></h4>
-<h4 class="date"><em>05:06 15 July 2016</em></h4>
+<h4 class="date"><em>13:12 19 July 2016</em></h4>
 </div>
 
 
@@ -81,7 +81,7 @@ img {
 <h2>Discrete Latent State TSIR Chain Binomial</h2>
 <div id="model" class="section level3">
 <h3>Model</h3>
-<p>_ I didn’t change the parameter names in the code (I will for the paper later… I just want to get over this wall for now and be semi-formal at the same time. So <span class="math inline">\(\alpha = effprop\)</span>, r is repMean,<span class="math inline">\(\beta = \textrm{exp}(-R0/N)\)</span>_</p>
+<p>_ I didn’t change the parameter names in the code (I will for the paper later… I just want to get over this wall for now and be semi-formal at the same time. So <span class="math inline">\(\alpha = effprop\)</span>, r is repMean,<span class="math inline">\(\beta = \textrm{exp}(\frac{-R_{0}}{N})\)</span></p>
 <p>The Reed-Frost model is a discrete-time SIR model that assumes recovery one time step after infection. Let <span class="math inline">\(N\)</span> be the population size, <span class="math inline">\(I_{1}\)</span> be the initial number of infectives, <span class="math inline">\(\beta\)</span> be the probability of adequate contact per infective, then the RF model can be written as:</p>
 <p><span class="math display">\[
 S_{1} = N - I_{1}

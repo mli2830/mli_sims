@@ -13,7 +13,7 @@ I am trying to figure out why the hybrid TSIR chain binomial is overshooting the
 
 ### Model
 
-_ I didn't change the parameter names in the code (I will for the paper later... I just want to get over this wall for now and be semi-formal at the same time. So $\alpha = effprop$, r is repMean,$\beta = \textrm{exp}(-R0/N)$_
+_ I didn't change the parameter names in the code (I will for the paper later... I just want to get over this wall for now and be semi-formal at the same time. So $\alpha = effprop$, r is repMean,$\beta = \textrm{exp}(\frac{-R_{0}}{N})$
 
 The Reed-Frost model is a discrete-time SIR model that assumes recovery one time step after infection. Let $N$ be the population size, $I_{1}$ be the initial number of infectives, $\beta$ be the probability of adequate contact per infective, then the RF model can be written as:
 
