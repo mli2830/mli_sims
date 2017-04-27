@@ -1,0 +1,35 @@
+---
+title: "Swapping latent and infection periods"
+author: "mike"
+date: "April 26, 2017"
+output: html_document
+---
+# Large latent peiod and short infectious period 
+```{r}
+sim <- 10000
+latent <- rnorm(n=sim,mean=100,sd=10)
+inf <- rnorm(n=sim,mean=10,sd=1)
+generation_time <- numeric(sim)
+for(i in 1:sim){
+  generation_time[i] <- runif(1,min=latent[i],max=latent[i]+inf[i])
+}
+
+hist(generation_time)
+mean(generation_time)
+var(generation_time)
+```
+
+# Short latent peiod and long infectious period 
+```{r}
+sim <- 10000
+latent2 <- rnorm(n=sim,mean=10,sd=1)
+inf2 <- rnorm(n=sim,mean=100,sd=10)
+generation_time2 <- numeric(sim)
+for(i in 1:sim){
+  generation_time2[i] <- runif(1,min=latent2[i],max=latent2[i]+inf2[i])
+}
+
+hist(generation_time2)
+mean(generation_time2)
+var(generation_time2)
+```
