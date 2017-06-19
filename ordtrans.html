@@ -118,12 +118,12 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Ordinal Transmation</h1>
 <h4 class="author"><em>Michael WZ Li</em></h4>
-<h4 class="date"><em>15:00 19 June 2017</em></h4>
+<h4 class="date"><em>15:35 19 June 2017</em></h4>
 
 </div>
 
 
-<p>We want to transform a ordinal fitted object back to the ordinal (cumulative probability) scale?</p>
+<p>We want to transform a ordinal fitted object back to the ordinal (cumulative probability) scale? See <a href="https://cran.r-project.org/web/packages/ordinal/vignettes/clmm2_tutorial.pdf">here</a></p>
 <pre class="r"><code>library(ordinal)
 
 y &lt;- c(rep(0,100),rep(1,50),rep(2,50),rep(3,50),rep(4,50))
@@ -165,6 +165,9 @@ P(Y \leq j) = \textrm{logit}^{-1}(\alpha_{j})
 <p><span class="math display">\[
 \textrm{logit}^{-1}(\nu) = \frac{1}{1+exp(\nu)}
 \]</span> , <span class="math inline">\(plogis(-\nu)\)</span> in R.</p>
+<pre class="r"><code>print(1/(1+exp(mod$alpha)))</code></pre>
+<pre><code>##       0|1       1|2       2|3       3|4 
+## 0.6666667 0.5000000 0.3333333 0.1666667</code></pre>
 <pre class="r"><code>probs &lt;- plogis(-mod$alpha)
 print(probs)</code></pre>
 <pre><code>##       0|1       1|2       2|3       3|4 
@@ -251,6 +254,7 @@ print(probs_fix)</code></pre>
 <pre><code>## [1] 1.770194</code></pre>
 <pre class="r"><code>print(sum(plogis(-mod_fix$alpha)))</code></pre>
 <pre><code>## [1] 1.986073</code></pre>
+<p>Did I transform it correctly for the fixed-effect example?</p>
 </div>
 </div>
 

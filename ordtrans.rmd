@@ -7,7 +7,7 @@ output:
     mathjax: default
 ---
 
-We want to transform a ordinal fitted object back to the ordinal (cumulative probability) scale?
+We want to transform a ordinal fitted object back to the ordinal (cumulative probability) scale? See [here](https://cran.r-project.org/web/packages/ordinal/vignettes/clmm2_tutorial.pdf)
 
 ```{r pkg}
 library(ordinal)
@@ -44,6 +44,7 @@ $$
 , $plogis(-\nu)$ in R.
 
 ```{r calculating by hand}
+print(1/(1+exp(mod$alpha)))
 probs <- plogis(-mod$alpha)
 print(probs)
 sum(probs)
@@ -84,3 +85,5 @@ sum(probs_fix)
 print(sum(plogis(-mod_fix$alpha)))
 
 ```
+
+Did I transform it correctly for the fixed-effect example?
