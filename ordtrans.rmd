@@ -1,0 +1,86 @@
+---
+title: "Ordinal Transmation"
+author: Michael WZ Li 
+date: "`r format(Sys.time(), '%H:%M %d %B %Y')`"
+output:
+    html_document:
+    mathjax: default
+---
+
+We want to transform a ordinal fitted object back to the ordinal (cumulative probability) scale?
+
+```{r pkg}
+library(ordinal)
+
+y <- c(rep(0,100),rep(1,50),rep(2,50),rep(3,50),rep(4,50))
+summary(y)
+sum(50+100+150+200)/300
+set.seed(2830)
+y_randomorder <- y[sample(1:length(y),length(y))]
+summary(y_randomorder)
+
+factor_y <- factor(y)
+dat <- data.frame(y=factor_y,y_ro=factor(y_randomorder))
+
+mod <- clm(y~1,data=dat)
+summary(mod)
+
+mod$alpha
+
+```
+
+The cumulative probability is the following:
+$$
+P(Y \leq j) = \textrm{logit}^{-1}(\alpha_{j})
+$$
+
+where $\alpha$'s are the threshold coefficients.
+
+We can compute the above probability by hand:
+
+$$
+\textrm{logit}^{-1}(\nu) = \frac{1}{1+exp(\nu)}
+$$
+, $plogis(-\nu)$ in R.
+
+```{r calculating by hand}
+probs <- plogis(-mod$alpha)
+print(probs)
+sum(probs)
+
+mod_ro <- clm(y_ro~1,data=dat)
+
+probs_ro <- plogis(-mod_ro$alpha)
+print(probs_ro)
+sum(probs_ro)
+
+```
+
+## Assignment random grouping for random effect
+
+```{r simple RE}
+dat$group <- 1:10
+head(dat)
+mod_RE <- clmm(y_ro~1+(1|group),data=dat)
+
+summary(mod_RE)
+probs_RE <- plogis(-mod_RE$alpha)
+print(probs_RE)
+sum(probs_RE)
+
+```
+As expected, not much change.
+
+### Adding fix effects 
+```{r fix}
+dat$fix <- 1:2
+mod_fix <- clm(y_ro~fix,data=dat)
+
+summary(mod_fix)
+probs_fix <- plogis(mod_fix$beta-mod_fix$alpha)
+print(probs_fix)
+sum(probs_fix)
+
+print(sum(plogis(-mod_fix$alpha)))
+
+```
