@@ -118,7 +118,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Ordinal Transmation</h1>
 <h4 class="author"><em>Michael WZ Li</em></h4>
-<h4 class="date"><em>16:47 19 June 2017</em></h4>
+<h4 class="date"><em>16:57 19 June 2017</em></h4>
 
 </div>
 
@@ -184,7 +184,7 @@ print(probs_ro)</code></pre>
 <pre><code>## [1] 1.666667</code></pre>
 <div id="assigning-random-grouping-for-random-effect" class="section level2">
 <h2>Assigning random grouping for random effect</h2>
-<pre class="r"><code>dat$group &lt;- c(rep(1,10),rep(2,20),rep(3,30),rep(4,40),rep(5,2),rep(6,198))
+<pre class="r"><code>dat$group &lt;- c(rep(1,10),rep(2,20),rep(3,30),rep(4,40),rep(5,100),rep(6,100))
 head(dat)</code></pre>
 <pre><code>##   y y_ro group
 ## 1 0    2     1
@@ -194,8 +194,12 @@ head(dat)</code></pre>
 ## 5 0    1     1
 ## 6 0    4     1</code></pre>
 <pre class="r"><code>mod_RE &lt;- clmm(y~1+(1|group),data=dat)</code></pre>
+<pre><code>## Warning in update.uC(rho): step factor reduced below minimum when updating the random effects
+##   at iteration 2617</code></pre>
 <pre><code>## Warning in update.uC(rho): Non finite negative log-likelihood
-##   at iteration 1299</code></pre>
+##   at iteration 3596</code></pre>
+<pre><code>## Warning in update.uC(rho): step factor reduced below minimum when updating the random effects
+##   at iteration 6478</code></pre>
 <pre class="r"><code>summary(mod_RE)</code></pre>
 <pre><code>## Cumulative Link Mixed Model fitted with the Laplace approximation
 ## 
@@ -203,27 +207,27 @@ head(dat)</code></pre>
 ## data:    dat
 ## 
 ##  link  threshold nobs logLik  AIC    niter     max.grad cond.H 
-##  logit flexible  300  -282.08 574.16 298(4182) 1.25e-04 3.8e+04
+##  logit flexible  300  -149.83 309.66 455(7197) 8.58e-06 8.7e+02
 ## 
 ## Random effects:
 ##  Groups Name        Variance Std.Dev.
-##  group  (Intercept) 700.7    26.47   
+##  group  (Intercept) 791.6    28.13   
 ## Number of groups:  group 6 
 ## 
 ## No Coefficients
 ## 
 ## Threshold coefficients:
 ##     Estimate Std. Error z value
-## 0|1   12.796      4.714   2.715
-## 1|2   24.676      9.633   2.562
-## 2|3   25.796      9.634   2.678
-## 3|4   26.903      9.635   2.792</code></pre>
+## 0|1   13.100      4.583   2.858
+## 1|2   20.361      6.282   3.241
+## 2|3   28.072      8.219   3.415
+## 3|4   35.784      9.822   3.643</code></pre>
 <pre class="r"><code>probs_RE &lt;- plogis(-mod_RE$alpha)
 print(probs_RE)</code></pre>
 <pre><code>##          0|1          1|2          2|3          3|4 
-## 2.771112e-06 1.920121e-11 6.264406e-12 2.071541e-12</code></pre>
+## 2.046167e-06 1.436564e-09 6.431787e-13 2.877515e-16</code></pre>
 <pre class="r"><code>sum(probs_RE)</code></pre>
-<pre><code>## [1] 2.771139e-06</code></pre>
+<pre><code>## [1] 2.047604e-06</code></pre>
 <p>As expected, not much change.</p>
 <div id="adding-fix-effects" class="section level3">
 <h3>Adding fix effects</h3>
