@@ -57,12 +57,12 @@ sum(probs_ro)
 
 ```
 
-## Assignment random grouping for random effect
+## Assigning random grouping for random effect
 
 ```{r simple RE}
-dat$group <- 1:10
+dat$group <- c(rep(1,10),rep(2,20),rep(3,30),rep(4,40),rep(5,2),rep(6,198))
 head(dat)
-mod_RE <- clmm(y_ro~1+(1|group),data=dat)
+mod_RE <- clmm(y~1+(1|group),data=dat)
 
 summary(mod_RE)
 probs_RE <- plogis(-mod_RE$alpha)

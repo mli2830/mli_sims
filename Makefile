@@ -21,6 +21,9 @@ Archive += multivariate.html
 pymc.html: pymc.rmd
 pymc2.html: pymc2.rmd
 contrasts.html: contrasts.rmd
+
+ordtrans.html: ordtrans.html
+
 %.html: %.rmd
 	say -v Trinoids "complete"
 
