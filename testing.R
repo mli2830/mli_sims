@@ -27,19 +27,19 @@ nspp <- 100
 nsite <- 10
 
 # residual variance (set to zero for binary data)
-sd.resid <- 0.1
+sd.resid <- 10
 
 # fixed effects
 beta0 <- 0
 beta1 <- 0
 
 # magnitude of random effects
-sd.B0 <- 2
-sd.B1 <- 4
+sd.B0 <- 10
+sd.B1 <- 1
 
 # whether or not to include phylogenetic signal in B0 and B1
 signal.B0 <- TRUE
-signal.B1 <- TRUE
+signal.B1 <- FALSE
 
 # simulate a phylogenetic tree
 phy <- rtree(n = nspp)
@@ -135,9 +135,11 @@ re.site <- list(1, site = dat$site, covar = diag(nsite))
 # The rest of these tests are not run to save CRAN server time;
 # - please take a look at them because they're *very* useful!
 ## Not run: 
-pezfit <- communityPGLMM(Y ~ X, data = dat, family = "gaussian",
-                           sp = dat$sp, site = dat$site, random.effects = list(re.1, re.2,
-                                                                               re.3, re.4), REML = FALSE, verbose = FALSE)
+pezfit <- communityPGLMM(Y ~ 1, data = dat, family = "gaussian",
+                         sp = dat$sp, site = dat$site, random.effects = list(re.1
+                                                                             , re.2
+                                                                             # ,re.3, re.4
+                         ), REML = FALSE, verbose = FALSE)
 
 #### lme4 setup ----
 
@@ -169,8 +171,7 @@ split_blkMat <- function(M,ind) {
 }
 
 modify_phylo_retrms <- function(rt,phylo,phylonm,
-                                phyloZ,sp) {
-  rep_phylo <- rt$Zt@Dim[2]/length(unique(sp)) ## number of column (aka same as number of obs)
+                                phyloZ=phylo.to.Z(phylo)) {
   ## FIXME: better way to specify phylonm
   ## need to replace Zt, Lind, Gp, flist, Ztlist
   ## we have the same number of parameters (theta, lower),
@@ -179,54 +180,22 @@ modify_phylo_retrms <- function(rt,phylo,phylonm,
   phylo.pos <- which(names(rt$cnms)==phylonm)
   inds <- c(0,cumsum(sapply(rt$Ztlist,nrow)))
   ## Zt: substitute phylo Z for previous dummy (scalar-intercept) Z
-  # for(i in phylo.pos){
-  # repterms <- nrow(rt[["Ztlist"]][[i]])/length(unique(sp))
-  # rt[["Ztlist"]][[i]] <- KhatriRao(do.call(cbind,replicate(rep_phylo,t(phyloZ),simplify = FALSE)),
-  #             matrix(1
-  #                    , ncol=ncol(rt[["Ztlist"]][[i]])
-  #                    , nrow=repterms)
-  # )
+  rt[["Ztlist"]][[phylo.pos]] <- do.call(cbind,replicate(10,t(phyloZ),simplify = FALSE))
   ## reconstitute Zt from new Ztlist
-  # }
-  # rt[["Zt"]] <- do.call(rbind,rt[["Ztlist"]])
+  rt[["Zt"]] <- do.call(rbind,rt[["Ztlist"]])
   ## Gp: substitute new # random effects (n.edge) for old # (n.phylo)
   Gpdiff <- diff(rt$Gp)  ## old numbers
   Gpdiff_new <- Gpdiff
-  # for(i in phylo.pos){
-  # Gpdiff_new[i] <- n.edge  ## replace
-  # }
+  Gpdiff_new[phylo.pos] <- n.edge  ## replace
   rt[["Gp"]] <- as.integer(c(0,cumsum(Gpdiff_new)))          ## reconstitute
   ## Lind: replace phylo block with the same element, just more values
   Lind_list <- split(rt[["Lind"]],rep(seq_along(Gpdiff),Gpdiff))
-  # for(i in phylo.pos){
-  # Lind_list[[i]] <- rep(Lind_list[[i]][1],n.edge)
-  # }
-  # rt[["Lind"]] <- unlist(Lind_list)
+  Lind_list[[phylo.pos]] <- rep(Lind_list[[phylo.pos]][1],n.edge)
+  rt[["Lind"]] <- unlist(Lind_list)
   ## Lambdat: replace block-diagonal element in Lambdat with a
   ##   larger diagonal matrix
   Lambdat_list <- split_blkMat(rt[["Lambdat"]],inds)
-  # for(i in phylo.pos){
-  # Lambdat_list[[i]] <- KhatriRao(Diagonal(n.edge,1.0),
-  #             matrix(1
-  #                    , ncol=n.edge
-  #                    , nrow=repterms))
-  # }
-  
-  for(i in phylo.pos){
-    repterms <- nrow(rt[["Ztlist"]][[i]])/length(unique(sp))
-    #     rt[["Ztlist"]][[i]] <- KhatriRao(do.call(cbind,replicate(rep_phylo,t(phyloZ),simplify = FALSE)),
-    #                 matrix(1
-    #                        , ncol=ncol(rt[["Ztlist"]][[i]])
-    #                        , nrow=repterms)
-    #     )
-    ## reconstitute Zt from new Ztlist
-    rt[["Ztlist"]][[i]] <- t(phyloZ) %*% rt[["Ztlist"]][[i]]
-    Gpdiff_new[i] <- n.edge  ## replace
-    Lind_list[[i]] <- rep(Lind_list[[i]][1],n.edge)
-    Lambdat_list[[i]] <- Diagonal(n.edge,1.0)
-  }
-  rt[["Zt"]] <- do.call(rbind,rt[["Ztlist"]])
-  rt[["Lind"]] <- unlist(Lind_list)
+  Lambdat_list[[phylo.pos]] <- Diagonal(n.edge,1.0)
   rt[["Lambdat"]] <- Matrix::.bdiag(Lambdat_list)
   ## flist: 
   rt[["flist"]] <- as.list(rt[["flist"]])
@@ -234,21 +203,11 @@ modify_phylo_retrms <- function(rt,phylo,phylonm,
   return(rt)
 }
 
-phylo_glmm <- function(formula,data,family,phylo,phylonm,phyloZ,sp) {
-  glmod <- glFormula(formula=formula,data = data, family = family)
-  glmod$reTrms <- modify_phylo_retrms(glmod$reTrms,phylo,
-                                      phylonm,phyloZ,sp)
-  devfun <- do.call(mkGlmerDevfun, glmod)
-  opt <- optimizeGlmer(devfun)
-  devfun <- updateGlmerDevfun(devfun, glmod$reTrms)
-  opt <- optimizeGlmer(devfun, stage=2)
-  mkMerMod(environment(devfun), opt, glmod$reTrms, fr = glmod$fr)
-}
 
-phylo_lmm <- function(formula,data,phylo,phylonm,phyloZ,control,sp) {
+phylo_lmm <- function(formula,data,phylo,phylonm,phyloZ,control) {
   lmod <- lFormula(formula=formula,data = data,control=control)
   lmod$reTrms <- modify_phylo_retrms(lmod$reTrms,phylo,
-                                     phylonm,phyloZ,sp)
+                                     phylonm,phyloZ)
   devfun <- do.call(mkLmerDevfun, lmod)
   opt <- optimizeLmer(devfun)
   # devfun <- updateLmerDevfun(devfun, lmod$reTrms)
@@ -260,13 +219,13 @@ phyZ <- phylo.to.Z(phy)
 
 dat$obs <- dat$sp
 
-lme4fit <- phylo_lmm(Y ~ X + (1|sp) + (1|obs) + (0+X|sp) + (0+X|obs) 
-                                 , data=dat
-                                 , phylonm = "sp"
-                                 , sp = dat$sp
-                                 , phylo = phy
-                                 , phyloZ=phyZ
-                                 , control=lmerControl(check.nobs.vs.nlev="ignore",check.nobs.vs.nRE="ignore"))
+lme4fit <- phylo_lmm(Y ~ 1  + (1|obs) + (1|sp) # + (0+X|sp) + (0+X|obs) 
+                     , data=dat
+                     , phylonm = "sp"
+                     # , sp = dat$sp
+                     , phylo = phy
+                     , phyloZ=phyZ
+                     , control=lmerControl(check.nobs.vs.nlev="ignore",check.nobs.vs.nRE="ignore"))
 
 #### Results ----
 
