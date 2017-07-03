@@ -20,22 +20,22 @@ library(nlme)
 
 #### pez setup----
 
-set.seed(101)
+set.seed(102)
 #
 # Generate simulated data for nspp species and nsite sites
-nspp <- 50
+nspp <- 80
 nsite <- 10
 #
 # residual variance (set to zero for binary data)
-sd.resid <- 10
+sd.resid <- 5
 #
 # # fixed effects
 beta0 <- 0
 beta1 <- 0
 
 # magnitude of random effects
-sd.B0 <- 10
-sd.B1 <- 10
+sd.B0 <- 4
+sd.B1 <- 8
 
 # whether or not to include phylogenetic signal in B0 and B1
 signal.B0 <- TRUE
@@ -43,11 +43,11 @@ signal.B1 <- TRUE
 
 # simulate a phylogenetic tree
 phy <- rtree(n = nspp)
-# phy <- compute.brlen(phy, method = "Grafen", power = 0.5)
+phy <- compute.brlen(phy, method = "Grafen", power = 0.5)
 
 # standardize the phylogenetic covariance matrix to have determinant 1
 Vphy <- vcv(phy)
-Vphy <- Vphy/(det(Vphy)^(1/nspp))
+# Vphy <- Vphy/(det(Vphy)^(1/nspp))
 
 # Generate environmental site variable
 X <- matrix(1:nsite, nrow = 1, ncol = nsite)
@@ -151,7 +151,7 @@ phylo.to.Z <- function(r) {
       cn <- r$edge[ce,1]            ## find previous node
     }
   }
-  Z <- t(r$edge.length * t(Zid))
+  Z <- t(sqrt(r$edge.length) * t(Zid))
   return(Z)
 }
 
@@ -249,11 +249,11 @@ phylo_lmm <- function(formula,data,phylo,phylonm,phyloZ,control,sp) {
 
 #### fits ----
 
-system.time(pezfit <- communityPGLMM(Y ~ X, data = dat, family = "gaussian",
-                         sp = dat$sp, site = dat$site, random.effects = list(re.1
-                                                                             , re.2
-                                                                             ,re.3, re.4
-                         ), REML = FALSE, verbose = FALSE))
+# system.time(pezfit <- communityPGLMM(Y ~ X, data = dat, family = "gaussian",
+#                          sp = dat$sp, site = dat$site, random.effects = list(re.1
+#                                                                              , re.2
+#                                                                              ,re.3, re.4
+#                          ), REML = FALSE, verbose = FALSE))
 
 phyZ <- phylo.to.Z(phy)
 
