@@ -1,0 +1,52 @@
+---
+title: "The Horrors of Model Matrices"
+author: "MLi"
+date: "January 31, 2018"
+output: html_document
+---
+
+# Introduction
+
+This is a rant that I wanted to rant about for years about the terriftying guts of model matrix and its applications. 
+I came accross three incidences where I have to understand (_hack_) model matrix for specific application and when I am developing/working on a new method.
+The three cases are the following:
+
+- Contrast (I still have no clue how it works)
+- Structural Imputation (NAs)
+- Random Effect Matrices (Z)
+
+I (like 50% (more like 99.9% humans)) like to assume I know what I am doing and stick a dataset in a blackbox, press a button and close my eyes and hope the blackbox can read my mind or do something smart/sensible. 
+The blackbox usually does something reasonible and often _more correct_ than user have in mind because these are tools developed by very smart people. 
+
+
+```{r pkg, message=FALSE, warning=FALSE}
+library(lme4)
+library(Matrix)
+library(dplyr)
+```
+
+```{r d1}
+dd <- expand.grid(sp=paste("sp",1:3,sep=""),site=paste("site",1:2,sep=""),rep=1)
+dd$site <- factor(dd$site)
+dd$sp <- factor(dd$sp)
+print(dd)
+print(image(with(dd,fac2sparse(interaction(site,sp)))))
+print(with(dd,fac2sparse(interaction(site,sp))))
+
+print(image(with(dd,fac2sparse(interaction(sp,site)))))
+print(with(dd,fac2sparse(interaction(sp,site))))
+```
+
+
+Now if I rearrange the model frame, I get a different view. 
+```{r, echo=FALSE}
+print(dd2 <- dd %>% arrange(sp,site))
+
+print(image(with(dd2,fac2sparse(interaction(site,sp)))))
+print(with(dd2,fac2sparse(interaction(site,sp))))
+
+print(image(with(dd2,fac2sparse(interaction(sp,site)))))
+print(with(dd2,fac2sparse(interaction(sp,site))))
+
+```
+
