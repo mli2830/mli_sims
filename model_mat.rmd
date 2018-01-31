@@ -19,6 +19,12 @@ I (like 50% (more like 99.9% humans)) like to assume I know what I am doing and 
 The blackbox usually does something reasonible and often _more correct_ than user have in mind because these are tools developed by very smart people. 
 
 
+## Interactions 
+... I am going to skip to the interaction problem. 
+This is a short example of what I mean it can get confusing and hairy. 
+Mathematically speaking, they are identical (p1 and p3, p2 and p4), but because the model frames are arrange in different ways, they look different. 
+
+
 ```{r pkg, message=FALSE, warning=FALSE}
 library(lme4)
 library(Matrix)
