@@ -82,10 +82,11 @@ img {
 <li>Structural Imputation (NAs)</li>
 <li>Random Effect Matrices (Z)</li>
 </ul>
-<p>I (like 50% (more like 99.9% humans)) like to assume I know what I am doing and stick a dataset in a blackbox, press a button and close my eyes and hope the blackbox can read my mind or do something smart/sensible. The blackbox usually does something reasonible and often <em>more correct</em> than user have in mind because these are tools developed by very smart people.</p>
+<p>I (like 50% (more like 99.9% humans)) like to assume I know what I am doing and stick a dataset in a blackbox, press a button and close my eyes and hope the blackbox can read my mind or do something smart/sensible. Blackboxes usually does something reasonable and often <em>more correct</em> than user have in mind because these are tools developed by very smart people.</p>
+<p>Here is the part that bugs me how users don’t appreicate how complicated these blackboxes are and take them for granted. Developing software is hard and smart people spend many hours banging on their heads to create these software! As a young developers, it is dangerous to assume/ignore/breeze through the details. Mathematically speaking, everything is straight forward and never pay much attention to <em>model matrices</em>. Here is a simple example of a very simple concept taught in an intro to stats course or experimental design course.</p>
 <div id="interactions" class="section level2">
 <h2>Interactions</h2>
-<p>… I am going to skip to the interaction problem. This is a short example of what I mean it can get confusing and hairy. Mathematically speaking, they are identical (p1 and p3, p2 and p4), but because the model frames are arrange in different ways, they look different.</p>
+<p>This is a short example of what I mean model matrices can get confusing and hairy. Let’s create a dataset of species in different sites and we are intested in <em>modelling</em> the species-site, site-species interaction. What does the model matrix look like?</p>
 <pre class="r"><code>library(lme4)
 library(Matrix)
 library(dplyr)</code></pre>
@@ -122,7 +123,7 @@ print(dd)</code></pre>
 ## sp1.site2 . . . 1 . .
 ## sp2.site2 . . . . 1 .
 ## sp3.site2 . . . . . 1</code></pre>
-<p>Now if I rearrange the model frame, I get a different view.</p>
+<p>As you can see, it matters how you set it up. Now let’s rearrange the data and sort them differently.</p>
 <pre><code>##    sp  site rep
 ## 1 sp1 site1   1
 ## 2 sp1 site2   1
@@ -148,6 +149,8 @@ print(dd)</code></pre>
 ## sp1.site2 . 1 . . . .
 ## sp2.site2 . . . 1 . .
 ## sp3.site2 . . . . . 1</code></pre>
+<p>Again, they look different <em>and</em> from p1 and p2. But they are <em>identical</em> somehow.</p>
+<p>The point is, it gets very hairy when you try to do more complicated stuff like nested random effects with both main effects.</p>
 </div>
 </div>
 
