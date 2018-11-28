@@ -1,0 +1,119 @@
+---
+title: "Importance Sampling/ Impossible Sampling"
+author: "MLi"
+date: "`r format(Sys.time(), '%H:%M %d %B %Y')`"
+output: html_document
+---
+
+# Introduction
+
+The basic idea of importance sampling is to draw a large number of simulations from the approximation distribution (usually a MVN or t), decide how close each is to the target posterior distribution, and keep those close with higher probablility than for those farther away via the _importance ratio_ or _weights_.
+Let X be a vector of parameters from a MVN(__X__, __V__) draw, the _importance ratio_ is the following:
+
+$$\frac{L(X | data)}{\text{MVN}( X | \bf{X}, \bf{V})}$$
+
+## Gaussian example
+
+First simulation data
+
+```{r sim data}
+
+n <- 1e3
+set.seed(112)
+dat <- rnorm(n)
+
+```
+
+Fit the data via mle 
+
+```{r mle,warning=FALSE}
+library(bbmle)
+
+nll <- function(m=0,s=1){
+  return(-sum(dnorm(dat,m,s,log=TRUE)))
+}
+  
+mlefit <- mle2(nll)
+
+print(coef(mlefit))
+print(vcov(mlefit))
+```
+
+The variances are so small, it can't even sample the space properly.
+Following the book and use the crazy pseudovariance.
+
+```{r impSamp}
+samp_size <- 1e3
+
+hh <- mlefit@details$hessian
+V <- bdsmatrix:::gchol(MASS:::ginv(hh))
+tV <- matrix(V@.Data,nrow=2)
+V <- t(tV)
+
+vv <- tV %*% V
+mv_samps0 <- MASS:::mvrnorm(samp_size, mu = coef(mlefit), Sigma=vv)
+
+print(summary(mv_samps0))
+
+
+vv <- vcov(mlefit)
+mv_samps <- MASS:::mvrnorm(samp_size, mu = coef(mlefit), Sigma=vv)
+
+print(summary(mv_samps))
+```
+
+Even without the crazy pseudovariance method, we still can't simulate a good sample.
+
+```{r imp_wts}
+Posterior_negLL <- sapply(1:samp_size,function(x){nll(mv_samps[x,])})
+approx_LL <- sapply(1:samp_size
+  , function(x){
+    mvtnorm::dmvnorm(mv_samps[x,]
+      , mean = coef(mlefit)
+      , sigma=vv
+      , log = TRUE
+      )
+    }
+)
+
+Log_imp_wts <- -Posterior_negLL - approx_LL
+print(summary(Log_imp_wts))
+Log_scaled_imp_wts <- Log_imp_wts - max(Log_imp_wts)
+print(summary(Log_scaled_imp_wts))
+
+imp_wts <- exp(Log_scaled_imp_wts)
+imp_wts <- imp_wts/sum(imp_wts) 
+print(summary(imp_wts))
+
+```
+
+## Diagnostics
+
+We can look at effective sample size and weighted quantiles.
+
+```{r eff_samp}
+eff_samp <- 1/sum(imp_wts^2)
+print(eff_samp) 
+```
+
+Uh-oh!
+
+```{r wq}
+wq <- sapply(1:2
+  , function(x){Hmisc::wtd.quantile(mv_samps[,x]
+    , weights = imp_wts
+    , probs = c(0.025, 0.975)
+    , normwt = TRUE
+    )
+  }
+)
+print(t(wq))
+print(confint(mlefit))
+
+```
+
+0 and 1 are not in the weighted quantiles and it looks nothing like the profile CIs.
+
+
+
+
